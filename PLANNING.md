@@ -1,5 +1,7 @@
 # Design + Discussion for PetML
 
+Source: https://huyenchip.com/machine-learning-systems-design/design-a-machine-learning-system.html#design-a-machine-learning-system-dwGQI5R
+
 ## Project Setup
 
 ### Goal
