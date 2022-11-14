@@ -4,6 +4,8 @@ sys.path.append("./lib/")
 from lib import requests # TODO smoother imports with layers
 import json
 import os
+import boto3
+import pytest
 
 # petfinder environment vars
 from lib import dotenv
@@ -18,6 +20,15 @@ PETFINDER_API_URL = env_vars.get("PETFINDER_API_URL")
 GRANT_TYPE=env_vars.get("GRANT_TYPE")
 CLIENT_ID=env_vars.get("PETFINDER_API_KEY")
 CLIENT_SECRET=env_vars.get("PETFINDER_SECRET")
+STATE_MACHINE_ARN=env_vars.get("PETFINDER_API_SFXN")
+
+# create step functions client
+client = boto3.client(
+        'stepfunctions',
+        aws_access_key_id='demo',
+        aws_secret_access_key='demo',
+        aws_session_token='demo'
+    )
 
 
 def lambda_handler(event, context):
@@ -47,6 +58,16 @@ def lambda_handler(event, context):
         # Send some context about this error to Lambda Logs
         print(e)
 
+        raise e
+
+    try: 
+        # start the step function execution
+        response = client.start_execution(
+            stateMachineArn=f'{STATE_MACHINE_ARN}',
+            input=json.dumps(response)
+        )
+
+    except Exception as e:
         raise e
 
     return {

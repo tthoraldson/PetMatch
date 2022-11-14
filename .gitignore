@@ -88,5 +88,6 @@ target/
 # Mypy cache
 .mypy_cache/
 
-# any env files
+# any env files that are not explicitly shared
 *.env.*
+!*.env.shared
