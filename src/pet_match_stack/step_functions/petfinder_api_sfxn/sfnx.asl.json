@@ -1,0 +1,13 @@
+{
+    "Comment": "This step function orchestrates a simple interaction with the Petfinder API using local lambda and local SAM",
+    "StartAt": "GetAuth",
+    "States": {
+        "GetAuth": {
+            "Type": "Task",
+            "Comment": "Returns a bearer token from Petfinder API",
+            "Resource": "",
+            "End": true
+        }
+    }
+    
+}

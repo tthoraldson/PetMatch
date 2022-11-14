@@ -14,7 +14,7 @@ Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: hello_world/
+      CodeUri: lambdas/hello_world/
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:
@@ -29,7 +29,7 @@ Resources:
   GetAuthFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: get_auth/
+      CodeUri: lambdas/get_auth/
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:
@@ -40,6 +40,15 @@ Resources:
           Properties:
             Path: /get_auth
             Method: get
+
+  # Step Function(s)
+  PetfinderApiSfxn:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Name: PetfinderApiSfxn
+      # location of the state machine definition
+      DefinitionUri: ./step_functions/petfinder_api_sfxn/sfnx.asl.json
+      Type: STANDARD
 
   # Base level layer with common Python modules
   standardmods:
@@ -75,3 +84,7 @@ Outputs:
   PetMatchLambdaRole:
     Description: "Implicit IAM Role created for Lambdas in the Pet Match Stack"
     Value: !GetAtt PetMatchLambdaRole.Arn
+
+  PetMatchStepFunctionRole:
+    Description: "Implicit IAM Role created for Step Functions in the Pet Match Stack"
+    Value: !GetAtt PetMatchStepFunctionRole.Arn

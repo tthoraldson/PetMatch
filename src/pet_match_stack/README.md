@@ -42,4 +42,11 @@ What's going on here?
 ```
     # Running step functions local
     docker run -p 8083:8083 --env-file aws-stepfunctions-local-credentials.txt amazon/aws-stepfunctions-local
+
+    Expected output >>
+    Starting server on port 8083 with account 123456789012, region us-east-1
 ```
+
+- Continue following directions in the walkthrough if you'd like to test create step functions locally with the HelloWorld example.
+- In the case of PetMatch, the step function is available and you simply need to run the following to add it to your local environment.
+
