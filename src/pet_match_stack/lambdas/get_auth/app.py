@@ -5,7 +5,10 @@ from lib import requests # TODO smoother imports with layers
 import json
 import os
 import boto3
-import pytest
+import json
+import os
+from botocore.stub import Stubber
+
 
 # petfinder environment vars
 from lib import dotenv
