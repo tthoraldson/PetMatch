@@ -13,6 +13,7 @@ from botocore.stub import Stubber
 # petfinder environment vars
 from lib import dotenv
 from dotenv import dotenv_values
+import boto3.session
 
 env_vars = { 
         **dotenv_values(".env.secret"), 
@@ -25,8 +26,17 @@ CLIENT_ID=env_vars.get("PETFINDER_API_KEY")
 CLIENT_SECRET=env_vars.get("PETFINDER_SECRET")
 STATE_MACHINE_ARN=env_vars.get("PETFINDER_API_SFXN")
 
+# create boto3 session
+session = boto3.session.Session(
+    aws_access_key_id='demo',
+    aws_secret_access_key='demo',
+    aws_session_token='demo',
+    region_name='us-east-1',
+    # profile_name='demo'
+)
+
 # create step functions client
-client = boto3.client(
+client = session.client(
         'stepfunctions',
         aws_access_key_id='demo',
         aws_secret_access_key='demo',
