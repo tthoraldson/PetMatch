@@ -91,3 +91,5 @@ target/
 # any env files that are not explicitly shared
 *.env.*
 !*.env.shared
+# petpy api key
+secrets_petfinder.py
