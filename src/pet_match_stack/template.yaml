@@ -41,14 +41,6 @@ Resources:
             Path: /get_auth
             Method: get
 
-  # Step Function(s)
-  PetfinderApiSfxn:
-    Type: AWS::Serverless::StateMachine
-    Properties:
-      Name: PetfinderApiSfxn
-      # location of the state machine definition
-      DefinitionUri: ./step_functions/petfinder_api_sfxn/sfnx.asl.json
-      Type: STANDARD
 
   # Base level layer with common Python modules
   standardmods:
@@ -65,17 +57,13 @@ Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Dev stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/hello/"
+  PetMatchApi:
+    Description: "API Gateway endpoint URL for Dev stage for PetMatch Get Data function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/get_data/"
 
   HelloWorldFunction:
     Description: "Hello World Lambda Function ARN"
     Value: !GetAtt HelloWorldFunction.Arn
-
-  PetMatchApi:
-    Description: "API Gateway endpoint URL for Dev stage for PetMatch Get Data function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/get_data/"
 
   GetAuthFunction:
     Description: "Get Data Lambda Function ARN"
@@ -84,7 +72,3 @@ Outputs:
   PetMatchLambdaRole:
     Description: "Implicit IAM Role created for Lambdas in the Pet Match Stack"
     Value: !GetAtt PetMatchLambdaRole.Arn
-
-  PetMatchStepFunctionRole:
-    Description: "Implicit IAM Role created for Step Functions in the Pet Match Stack"
-    Value: !GetAtt PetMatchStepFunctionRole.Arn

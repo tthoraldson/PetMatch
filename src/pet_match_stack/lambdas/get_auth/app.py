@@ -8,8 +8,6 @@ import boto3
 import json
 import os
 from botocore.stub import Stubber
-
-
 # petfinder environment vars
 from lib import dotenv
 from dotenv import dotenv_values
@@ -71,16 +69,6 @@ def lambda_handler(event, context):
         # Send some context about this error to Lambda Logs
         print(e)
 
-        raise e
-
-    try: 
-        # start the step function execution
-        response = client.start_execution(
-            stateMachineArn=f'{STATE_MACHINE_ARN}',
-            input=json.dumps(response)
-        )
-
-    except Exception as e:
         raise e
 
     return {

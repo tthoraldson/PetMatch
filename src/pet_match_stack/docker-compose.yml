@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  # dynamo
+  dynamo:
+    image: amazon/dynamodb-local:1.20.0
+    ports:
+      - "8000:8000"
+    networks: 
+    - pet_match_network
+
+  # setup db
+  db-setup:
+    build:
+      context: ./db-setup
+      dockerfile: db-setup.Dockerfile
+    # don't start before dynamo
+    depends_on:
+      - dynamo
+    # create shell
+    tty: true
+    ports: 
+      - "8002:8002"
+    # links to dynamo
+    links:
+      - dynamo
+    networks: 
+    - pet_match_network
+  
+# make sure to add containers to this network
+networks:
+  pet_match_network:
