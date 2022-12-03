@@ -41,6 +41,21 @@ Resources:
             Path: /get_auth
             Method: get
 
+  DynamoTestFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: lambdas/dynamo_test/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Events:
+        GetData:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /dynamo_test
+            Method: get
+
 
   # Base level layer with common Python modules
   standardmods:
@@ -68,6 +83,10 @@ Outputs:
   GetAuthFunction:
     Description: "Get Data Lambda Function ARN"
     Value: !GetAtt GetAuthFunction.Arn
+
+  DynamoTestFunction:
+    Description: "Dynamo Test Lambda Function ARN"
+    Value: !GetAtt DynamoTestFunction.Arn
   
   PetMatchLambdaRole:
     Description: "Implicit IAM Role created for Lambdas in the Pet Match Stack"
