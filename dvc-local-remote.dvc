@@ -1,0 +1,5 @@
+outs:
+- md5: bdcdd8455cf1393a3f6520e42bdd6de5.dir
+  size: 319030
+  nfiles: 1
+  path: dvc-local-remote
