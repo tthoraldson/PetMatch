@@ -9,9 +9,9 @@ with potential adopters.
 
 Team
 ------------
-Denise Blady
-Theresa Thoraldson
-Matthew Robinson
+* Denise Blady  
+* Theresa Thoraldson  
+* Matthew Robinson  
 
 Project Organization
 ------------
