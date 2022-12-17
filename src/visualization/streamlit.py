@@ -18,24 +18,31 @@ def liked(current_cat):
 
 def find_photo(current_cat):
     print(vars(current_cat['photos']))
-    if current_cat['photos']:
-        return current_cat['photos'][0]['full']
+    if not current_cat['photos'].empty:
+
+        return current_cat['primary_photo_cropped.full']
 
 
 
 # ==============================================================================
-cats_path = '../../data/raw/version0_5/Adoptable_cats_20221125.csv'
+cats_path = '/app/data/version0_5/Adoptable_cats_20221125.csv'
 sample_cats = pd.read_csv(cats_path, low_memory=False)
+sample_cats = sample_cats.dropna(subset=['primary_photo_cropped.full'])
+
 preferences = pd.DataFrame(columns=['user_name', 'cat_id', 'preference'])
 current_cat = sample_cats.sample()
 display_name = current_cat['name'].values[0]
-display_image = find_photo(current_cat)
+
+display_image = find_photo(current_cat).values
+
 display_description = str(current_cat['description'])
-st.write(current_cat['photos'])
+st.write(current_cat['primary_photo_cropped.full'])
 
 # st.image('https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/58980756/6/?bust=1669602382&width=600')
-if display_image:
-    st.image(display_image)
+
+if display_image is not None:
+    st.image(display_image[0])
+
 st.title('PetMatch Playground')
 
 user = st.selectbox(label='Select a user', options=['Theresa', 'Denise', 'Matt'])
