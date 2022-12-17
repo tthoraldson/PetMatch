@@ -24,7 +24,8 @@ def find_photo(current_cat):
 
 
 # ==============================================================================
-sample_cats = pd.read_csv('data/raw/version0_5/Adoptable_cats_20221125.csv', low_memory=False)
+cats_path = '../../data/raw/version0_5/Adoptable_cats_20221125.csv'
+sample_cats = pd.read_csv(cats_path, low_memory=False)
 preferences = pd.DataFrame(columns=['user_name', 'cat_id', 'preference'])
 current_cat = sample_cats.sample()
 display_name = current_cat['name'].values[0]

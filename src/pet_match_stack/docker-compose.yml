@@ -4,7 +4,7 @@ services:
   dynamo:
     image: amazon/dynamodb-local:1.20.0
     ports:
-      - "8000:8000"
+      - "8001:8001"
     networks: 
     - pet_match_network
 
@@ -25,7 +25,58 @@ services:
       - dynamo
     networks: 
     - pet_match_network
-  
+
+  # streamlit
+  streamlit:
+    build:
+      context: ../visualization
+      dockerfile: streamlit.Dockerfile
+    # create shell
+    tty: true
+    ports: 
+      - "8501:8501"
+    # links to dynamo
+    links:
+      - dynamo
+    networks:
+    - pet_match_network
+    # mount data to streamlit container
+    volumes:
+      - type: volume
+        # use the named volume as the source
+        source: pet-data
+        # i.e. your local_dir_absolute path will be mounted to target of next section (bind)
+        target: /Users/mattrobinson/fourth-brain/capstone/PetMatch/data/raw
+        volume:
+          nocopy: true
+      - type: bind
+        # use the named volume's target as the source
+        source: /Users/mattrobinson/fourth-brain/capstone/PetMatch/data/raw
+        target: /app/data
+        # do not allow app interface to write to pet-data volume
+        read_only: true
+
+      # create a new named volume for storing user rankings within repository
+      - type: volume
+      # use the named volume as the source
+        source: user-rankings
+        # i.e. your local_dir_absolute path will be mounted to target of next section (bind)
+        target: /Users/mattrobinson/fourth-brain/capstone/PetMatch/data/rankings
+        volume:
+          # allow copying
+          nocopy: false
+      - type: bind
+        # use the named volume's target as the source
+        source: /Users/mattrobinson/fourth-brain/capstone/PetMatch/data/rankings
+        target: /app/rankings
+        # allow writing to the volume
+        read_only: false
+
+volumes:
+  pet-data:
+  user-rankings:
+
+
 # make sure to add containers to this network
 networks:
   pet_match_network:
