@@ -8,13 +8,23 @@ def new_cat():
     # set session state variables
     current_cat = sample_cats.sample()
     display_name = current_cat['name'].values[0]
-    display_description = str(current_cat['description'])
+    display_description = str(current_cat['description'].values)
     display_image= find_photo(current_cat).values
+    env_children = str(current_cat['environment.children'].values)
+    env_dogs = str(current_cat['environment.dogs'].values)
+    env_cats  = str(current_cat['environment.cats'].values)
+    house_trained = str(current_cat['attributes.house_trained'].values)
+    special_needs = str(current_cat['attributes.special_needs'].values)
     # update session state variables
     st.session_state.current_cat = current_cat
     st.session_state.display_name = display_name
     st.session_state.display_description = display_description
     st.session_state.display_image = display_image
+    st.session_state.env_children = env_children
+    st.session_state.env_dogs = env_dogs
+    st.session_state.env_cats = env_cats
+    st.session_state.house_trained = house_trained
+    st.session_state.special_needs = special_needs
 
 def disliked(current_cat):
     # get fileSave from saved session
@@ -78,8 +88,13 @@ def initial_setup():
     # initialize session state for key cat instance variables if they don't already exist
     current_cat = sample_cats.sample()
     display_name = current_cat['name'].values[0]
-    display_description = str(current_cat['description'])
+    display_description = str(current_cat['description'].values)
     display_image= find_photo(current_cat).values
+    env_children = str(current_cat['environment.children'].values)
+    env_dogs = str(current_cat['environment.dogs'].values)
+    env_cats  = str(current_cat['environment.cats'].values)
+    house_trained = str(current_cat['attributes.house_trained'].values)
+    special_needs = str(current_cat['attributes.special_needs'].values)
     if 'display_name' not in st.session_state:
         st.session_state.display_name=display_name
     if 'display_description' not in st.session_state:
@@ -88,6 +103,16 @@ def initial_setup():
         st.session_state.display_image=display_image
     if 'current_cat' not in st.session_state:
         st.session_state.current_cat=current_cat
+    if 'env_children' not in st.session_state:
+        st.session_state.env_children=env_children
+    if 'env_dogs' not in st.session_state:
+        st.session_state.env_dogs=env_dogs
+    if 'env_cats' not in st.session_state:
+        st.session_state.env_cats=env_cats
+    if 'house_trained' not in st.session_state:
+        st.session_state.house_trained=house_trained
+    if 'special_needs' not in st.session_state:
+        st.session_state.special_needs=special_needs
     # set up actual first cat for user
     new_cat()
 
@@ -99,6 +124,12 @@ display_name=st.session_state.display_name
 display_description=st.session_state.display_description
 display_image=st.session_state.display_image
 current_cat=st.session_state.current_cat
+env_children = st.session_state.env_children
+env_dogs = st.session_state.env_dogs
+env_cats  = st.session_state.env_cats
+house_trained = st.session_state.house_trained
+special_needs = st.session_state.special_needs
+
 st.write(display_image[0])
 
 # st.image('https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/58980756/6/?bust=1669602382&width=600')
@@ -112,8 +143,14 @@ user = st.selectbox(label='Select a user', options=['Theresa', 'Denise', 'Matt']
 
 # photo
 st.header(display_name)
-st.write(display_description)
-
+st.write(display_description) # description of animal
+with st.expander("See more details about this animal"):
+    #add stuff to help people choose
+    st.write("Good with Children:", env_children)
+    st.write("Good with Dogs:", env_dogs)
+    st.write("Good with Cats:", env_cats)
+    st.write("House Trained:",house_trained)
+    st.write("Special Needs:",special_needs)
 
 col1, col2 = st.columns([1,1])
 with col1:
