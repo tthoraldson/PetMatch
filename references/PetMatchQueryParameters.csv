@@ -1,0 +1,25 @@
+PetMatch Query Parameters,Source: https://www.petfinder.com/developers/v2/docs/#endpoints
+Name,Description,Type,Values
+type,Return results matching animal type,string,Possible values may be looked up via Get Animal Types.
+breed,Return results matching animal breed,string,Accepts multiple values, e.g. breed=pug,samoyed. Possible values may be looked up via Get Animal Breeds below.
+size,Return results matching animal size,string,small, medium, large, xlarge Accepts multiple values, e.g. size=large,xlarge.
+gender,Return results matching animal gender,string,male, female, unknown Accepts multiple values, e.g. gender=male,female.
+age,Return results matching animal age,string,baby, young, adult, senior Accepts multiple values, e.g. age=baby,senior.
+color,Return results matching animal color,string,Possible values may be looked up via Get Animal Types.
+coat,Return results matching animal coat,string,short, medium, long, wire, hairless, curly Accepts multiple values, e.g. coat=wire,curly.
+status,Return results matching adoption status,string,adoptable, adopted, found Accepts multiple values (default: adoptable)
+name,Return results matching animal name (includes partial matches; e.g. "Fred" will return "Alfredo" and "Frederick"),string,
+organization,Return results associated with specific organization(s),string,Accepts multiple values, e.g. organization=[ID1],[ID2].
+good_with_children,Return results that are good with children,boolean,Can be true, false, 1, or 0
+good_with_dogs,Return results that are good with dogs,boolean,Can be true, false, 1, or 0
+good_with_cats,Return results that are good with cats,boolean,Can be true, false, 1, or 0
+house_trained,Return results that are house trained,boolean,Can be true or 1 only
+declawed,Return results that are declawed,boolean,Can be true or 1 only
+special_needs,Return results that have special needs,boolean,Can be true or 1 only
+location,Return results by location.,string,city, state; latitude,longitude; or postal code.
+distance,Return results within distance of location (in miles).,integer,Requires location to be set (default: 100, max: 500)
+before,Return results published before this date/time.,string,Must be a valid ISO8601 date-time string (e.g. 2019-10-07T19:13:01+00:00)
+after,Return results published after this date/time.,string,Must be a valid ISO8601 date-time string (e.g. 2019-10-07T19:13:01+00:00)
+sort,Attribute to sort by; leading dash requests a reverse-order sort,string,recent, -recent, distance, -distance, random (default: recent)
+page,Specifies which page of results to return,integer,(default: 1)
+limit,Maximum number of results to return per 'page' response,integer,(default: 20, max: 100)
