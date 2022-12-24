@@ -23,10 +23,12 @@ class DogsPetmatch:
         # get sample dogs from saved session
         sample_dogs=st.session_state.sample_dogs
         # set session state variables
-        current_dog = sample_dogs.sample()
+        self.current_dog = sample_dogs.sample()
+        current_dog = self.current_dog
+        
         display_name = current_dog['name'].values[0]
         display_description = str(current_dog['description_x'].values)
-        display_image= find_photo(current_dog).values
+        display_image= self.find_photo(current_dog).values
         env_children = str(current_dog['environment.children'].values)
         env_dogs = str(current_dog['environment.dogs'].values)
         env_cats  = str(current_dog['environment.cats'].values)

@@ -35,22 +35,25 @@ class CatsPetmatch:
 
     # gets a new cat to display
     def new_cat(self):
-        self.current_cat = self.sample_cats.sample()
-        self.display_name = self.current_cat['name'].values[0]
-        self.display_description = self.current_cat['description']
-        self.find_photo(self.current_cat)
+
+        current_cat = self.sample_cats.sample()
+        display_name = current_cat['name'].values[0]
+        display_description = current_cat['description']
+
+        display_image = self.find_photo(current_cat)
 
         # set session state variables
-        env_children = str(self.current_cat['environment.children'].values)
-        env_dogs = str(self.current_cat['environment.dogs'].values)
-        env_cats  = str(self.current_cat['environment.cats'].values)
-        house_trained = str(self.current_cat['attributes.house_trained'].values)
-        special_needs = str(self.current_cat['attributes.special_needs'].values)
+        env_children = str(current_cat['environment.children'].values)
+        env_dogs = str(current_cat['environment.dogs'].values)
+        env_cats  = str(current_cat['environment.cats'].values)
+        house_trained = str(current_cat['attributes.house_trained'].values)
+        special_needs = str(current_cat['attributes.special_needs'].values)
+
         # update session state variables
-        st.session_state.current_cat = self.current_cat
-        st.session_state.display_name = self.display_name
-        st.session_state.display_description = self.display_description
-        st.session_state.display_image = self.display_image
+        st.session_state.current_cat = current_cat
+        st.session_state.display_name = display_name
+        st.session_state.display_description = display_description
+        st.session_state.display_image = display_image
         st.session_state.env_children = env_children
         st.session_state.env_dogs = env_dogs
         st.session_state.env_cats = env_cats
@@ -79,7 +82,9 @@ class CatsPetmatch:
 
     # find cat photo(s)
     def find_photo(self, current_cat):
-        print(vars(current_cat['photos']))
+
+        print(f"\n finding photos for current cat {current_cat} \n ")
+        
         if not current_cat['photos'].empty:
 
 
@@ -104,11 +109,26 @@ class CatsPetmatch:
         except PermissionError:
             pass
 
-    @st.experimental_memo(suppress_st_warning=True)
-    def initial_setup(self):
-        saveFile = '../../data/rankings/petmatch_rankings_cats.csv'
-        sample_cats = pd.read_csv('../../data/raw/version0_5/Adoptable_cats_20221125.csv', low_memory=False,header=0,index_col=0)
+    # @st.experimental_memo(suppress_st_warning=True)
+    # def initialize_state(_self):
+
+
+
+    # @st.experimental_memo(suppress_st_warning=True)
+    def initial_setup(self): # tell streamlit not to hash the parameter with an underscore
+        print(f""" 
+            initializing cats setup....
+        """)
+        saveFile = './rankings/petmatch_rankings_cats.csv' # TODO update this path
+        
+        sample_cats = pd.read_csv(self.cats_path, low_memory=False,header=0,index_col=0)
+        
         sample_cats = sample_cats.dropna(subset=['primary_photo_cropped.full'])
+        
+
+        # assign clean sample cats dataframe
+        self.sample_cats = sample_cats
+
         self.preferences = pd.DataFrame(columns=['user_name', 'cat_id', 'preference'])
         if not os.path.isfile(saveFile):
             self.appendDFToCSV_void(self.preferences,saveFile) # make file from scratch if it doesn't already exist
@@ -121,14 +141,16 @@ class CatsPetmatch:
 
         # initialize session state for key cat instance variables if they don't already exist
         self.current_cat = self.sample_cats.sample()
+
         display_name = self.current_cat['name'].values[0]
         display_description = str(self.current_cat['description'].values)
-        display_image= self.find_photo(self.current_cat).values
+        display_image = self.find_photo(self.current_cat).values
         env_children = str(self.current_cat['environment.children'].values)
         env_dogs = str(self.current_cat['environment.dogs'].values)
         env_cats  = str(self.current_cat['environment.cats'].values)
         house_trained = str(self.current_cat['attributes.house_trained'].values)
         special_needs = str(self.current_cat['attributes.special_needs'].values)
+
         if 'display_name' not in st.session_state:
             st.session_state.display_name=display_name
         if 'display_description' not in st.session_state:
@@ -147,12 +169,65 @@ class CatsPetmatch:
             st.session_state.house_trained=house_trained
         if 'special_needs' not in st.session_state:
             st.session_state.special_needs=special_needs
+        
         # set up actual first cat for user
         self.new_cat()
 
 
+print(f"""
+    Creating Cats...
+    \n
+    \n
+""")
 cats_petmatch = CatsPetmatch()
+print(f"""
+    Initialized Cats object...
+    {cats_petmatch}
+    \n
+    \n
+""")
 
+# initial setup of cats
+print("\n initial setup running...")
+cats_petmatch.initial_setup()
+
+# # access saved values from session
+display_name=st.session_state.display_name
+display_description=st.session_state.display_description
+display_image=st.session_state.display_image
+current_cat=st.session_state.current_cat
+env_children = st.session_state.env_children
+env_dogs = st.session_state.env_dogs
+env_cats  = st.session_state.env_cats
+house_trained = st.session_state.house_trained
+special_needs = st.session_state.special_needs
+
+# photo
+if display_image is not None:
+    print(f""" 
+        displaying image:
+        {display_image}
+        values:
+        {display_image.values}
+    """)
+    st.image(display_image.values[0])
+
+# header, description
+st.header(cats_petmatch.display_name)
+st.write(cats_petmatch.display_description)
+
+
+
+# # add the expander
+with st.expander("See more details about this animal"):
+    #add stuff to help people choose
+    st.write("Good with Children:", env_children)
+    st.write("Good with Dogs:", env_dogs)
+    st.write("Good with Cats:", env_cats)
+    st.write("House Trained:",house_trained)
+    st.write("Special Needs:",special_needs)
+
+# add like buttons
 col1, col2 = st.columns([1,1])
 with col1:
     if st.button('dislike'):
@@ -165,20 +240,13 @@ with col2:
                 cats_petmatch.current_cat
             )
 
-# # photo
-st.header(cats_petmatch.display_name)
-st.write(cats_petmatch.display_description)
-
-# initial setup of cats
-cats_petmatch.initial_setup()
-
 # access saved values from session
-display_name=st.session_state.display_name
-display_description=st.session_state.display_description
-display_image=st.session_state.display_image
-current_cat=st.session_state.current_cat
-env_children = st.session_state.env_children
-env_dogs = st.session_state.env_dogs
-env_cats  = st.session_state.env_cats
-house_trained = st.session_state.house_trained
-special_needs = st.session_state.special_needs
+# display_name=st.session_state.display_name
+# display_description=st.session_state.display_description
+# display_image=st.session_state.display_image
+# current_cat=st.session_state.current_cat
+# env_children = st.session_state.env_children
+# env_dogs = st.session_state.env_dogs
+# env_cats  = st.session_state.env_cats
+# house_trained = st.session_state.house_trained
+# special_needs = st.session_state.special_needs
