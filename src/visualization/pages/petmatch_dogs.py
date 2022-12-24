@@ -5,9 +5,8 @@ import os
 class DogsPetmatch:
 
     # TODO do not hardcode path to load dogs data
-    dogs_path = '../../data/raw/version0_5/Adoptable_dogs_20221202_withExtras.csv'
-    sample_dogs = pd.read_csv(dogs_path, low_memory=False,header=0,index_col=0)
-    saveFile = '../../data/rankings/petmatch_rankings_dogs.csv'
+    dogs_path = '/app/data/version0_5/Adoptable_dogs_20221202_withExtras.csv'
+    saveFile = '/app/data/rankings/userRankings.txt'
 
     def __init__(self):
         self.preferences = pd.DataFrame(columns=['user_name', 'dog_id', 'preference'])
@@ -19,6 +18,15 @@ class DogsPetmatch:
         self.current_dog = None
         self.user = 'Matt' # TODO change this to non-hardcoded
 
+    @st.cache
+    def get_dog_data(self):
+
+        dogs_path = self.dogs_path
+
+        sample_dogs = pd.read_csv(self.dogs_path, low_memory=False)
+
+        return f'retrieved dog data from {dogs_path}'
+
     def new_dog(self):
         # get sample dogs from saved session
         sample_dogs=st.session_state.sample_dogs
@@ -26,61 +34,70 @@ class DogsPetmatch:
         self.current_dog = sample_dogs.sample()
         current_dog = self.current_dog
         
-        display_name = current_dog['name'].values[0]
-        display_description = str(current_dog['description_x'].values)
-        display_image= self.find_photo(current_dog).values
-        env_children = str(current_dog['environment.children'].values)
-        env_dogs = str(current_dog['environment.dogs'].values)
-        env_cats  = str(current_dog['environment.cats'].values)
-        house_trained = str(current_dog['attributes.house_trained'].values)
-        special_needs = str(current_dog['attributes.special_needs'].values)
-        breed_group = str(current_dog['group'].values)
-        groom_freq = str(current_dog['grooming_frequency_category'].values)
-        shed_freq = str(current_dog['shedding_category'].values)
-        energy_type = str(current_dog['energy_level_category'].values)
-        train_type = str(current_dog['trainability_category'].values)
-        demeanor = str(current_dog['demeanor_category'].values)
-        breed = str(current_dog['breeds.primary'].values)
-        # update session state variables
-        st.session_state.current_dog = current_dog
-        st.session_state.display_name = display_name
-        st.session_state.display_description = display_description
-        st.session_state.display_image = display_image
-        st.session_state.env_children = env_children
-        st.session_state.env_dogs = env_dogs
-        st.session_state.env_cats = env_cats
-        st.session_state.house_trained = house_trained
-        st.session_state.special_needs = special_needs
-        st.session_state.breed_group = breed_group
-        st.session_state.groom_freq = groom_freq
-        st.session_state.shed_freq = shed_freq
-        st.session_state.energy_type = energy_type
-        st.session_state.train_type = train_type
-        st.session_state.demeanor = demeanor
-        st.session_state.breed = breed
+        # set instance attributes
+        self.display_name = current_dog['name'].values[0]
+        self.display_description = str(current_dog['description_x'].values)
+        self.display_image= self.find_photo(current_dog).values
 
+        self.env_children = str(current_dog['environment.children'].values)
+        self.env_dogs = str(current_dog['environment.dogs'].values)
+        self.env_cats  = str(current_dog['environment.cats'].values)
+        self.house_trained = str(current_dog['attributes.house_trained'].values)
+        self.special_needs = str(current_dog['attributes.special_needs'].values)
+        self.breed_group = str(current_dog['group'].values)
+        self.groom_freq = str(current_dog['grooming_frequency_category'].values)
+        self.shed_freq = str(current_dog['shedding_category'].values)
+        self.energy_type = str(current_dog['energy_level_category'].values)
+        self.train_type = str(current_dog['trainability_category'].values)
+        self.demeanor = str(current_dog['demeanor_category'].values)
+        self.breed = str(current_dog['breeds.primary'].values)
+        
+        # update session state variables from instance attribuets
+        st.session_state.current_dog = self.current_dog
+        st.session_state.display_name = self.display_name
+        st.session_state.display_description = self.display_description
+        st.session_state.display_image = self.display_image
+        st.session_state.env_children = self.env_children
+        st.session_state.env_dogs = self.env_dogs
+        st.session_state.env_cats = self.env_cats
+        st.session_state.house_trained = self.house_trained
+        st.session_state.special_needs = self.special_needs
+        st.session_state.breed_group = self.breed_group
+        st.session_state.groom_freq = self.groom_freq
+        st.session_state.shed_freq = self.shed_freq
+        st.session_state.energy_type = self.energy_type
+        st.session_state.train_type = self.train_type
+        st.session_state.demeanor = self.demeanor
+        st.session_state.breed = self.breed
+
+    # registers a disliked dog
     def disliked(self,current_dog):
-        # get fileSave from saved session
-        filetoSave=st.session_state.saveFile
-        # get preferences frame from saved session
-        preferences=st.session_state.preferences
+
+        # get fileSave from instance
+        filetoSave=self.saveFile
+
+        
         updateRow= pd.concat([preferences, pd.DataFrame({'user_name': user, 'dog_id': current_dog['id'], 'preference': 0})], ignore_index=True)
-        print('disliked')
+        print('disliked...calling new dog ')
+        
         self.appendDFToCSV_void(updateRow,filetoSave) #save dataframe to csv in append mode
         self.new_dog()
 
+    # registers a liked dog 
     def liked(self,current_dog):
         # get fileSave from saved session
         filetoSave=st.session_state.saveFile
-        # get preferences frame from saved session
-        preferences=st.session_state.preferences
+        
         updateRow = pd.concat([preferences, pd.DataFrame({'user_name': user, 'dog_id': current_dog['id'], 'preference': 1})], ignore_index=True)
-        print('liked')
+        
+        print('liked... calling ne dog')
         self.appendDFToCSV_void(updateRow,filetoSave) #save dataframe to csv in append mode
         self.new_dog()
 
     def find_photo(self,current_dog):
-        print(vars(current_dog['photos']))
+
+        print(f"\n finding photos for current dog {current_Dog} \n ")
+        
         if not current_dog['photos'].empty:
             return current_dog['primary_photo_cropped.full']
 
@@ -103,12 +120,19 @@ class DogsPetmatch:
         except PermissionError:
             pass
 
-    @st.experimental_memo(suppress_st_warning=True)
+    # @st.experimental_memo(suppress_st_warning=True)
     def initial_setup(self):
-        saveFile = '../../data/rankings/petmatch_rankings_dogs.csv'
-        sample_dogs = pd.read_csv('../../data/raw/version0_5/Adoptable_dogs_20221202_withExtras.csv', low_memory=False,header=0,index_col=0)
+        saveFile = './rankings/petmatch_rankings_dogs.csv'
+        sample_dogs = pd.read_csv(self.dogs_path, low_memory=False,header=0,index_col=0)
+        
+        # drop NAs 
         sample_dogs = sample_dogs.dropna(subset=['primary_photo_cropped.full'])
-        preferences = pd.DataFrame(columns=['user_name', 'dog_id', 'preference'])
+
+        # assign clean sample dogs dataframe
+        self.sample_dogs = sample_dogs
+
+        self.preferences = pd.DataFrame(columns=['user_name', 'dog_id', 'preference'])
+
         if not os.path.isfile(saveFile):
             self.appendDFToCSV_void(preferences,saveFile) # make file from scratch if it doesn't already exist
         if 'sample_dogs' not in st.session_state:
@@ -119,57 +143,74 @@ class DogsPetmatch:
             st.session_state.preferences=preferences
 
         # initialize session state for key dog instance variables if they don't already exist
-        current_dog = sample_dogs.sample()
-        display_name = current_dog['name'].values[0]
-        display_description = str(current_dog['description_x'].values)
-        display_image= self.find_photo(current_dog).values
-        env_children = str(current_dog['environment.children'].values)
-        env_dogs = str(current_dog['environment.dogs'].values)
-        env_cats  = str(current_dog['environment.cats'].values)
-        house_trained = str(current_dog['attributes.house_trained'].values)
-        special_needs = str(current_dog['attributes.special_needs'].values)
-        breed_group = str(current_dog['group'].values)
-        groom_freq = str(current_dog['grooming_frequency_category'].values)
-        shed_freq = str(current_dog['shedding_category'].values)
-        energy_type = str(current_dog['energy_level_category'].values)
-        train_type = str(current_dog['trainability_category'].values)
-        demeanor = str(current_dog['demeanor_category'].values)
-        breed = str(current_dog['breeds.primary'].values)
+        self.current_dog = self.sample_dogs.sample()
 
+        self.display_name = current_dog['name'].values[0]
+        self.display_description = str(self.current_dog['description_x'].values)
+        self.display_image= self.find_photo(current_dog).values
+        self.env_children = str(self.current_dog['environment.children'].values)
+        self.env_dogs = str(self.current_dog['environment.dogs'].values)
+        self.env_cats  = str(self.current_dog['environment.cats'].values)
+        self.house_trained = str(self.current_dog['attributes.house_trained'].values)
+        self.special_needs = str(self.current_dog['attributes.special_needs'].values)
+        self.breed_group = str(self.current_dog['group'].values)
+        self.groom_freq = str(self.current_dog['grooming_frequency_category'].values)
+        self.shed_freq = str(self.current_dog['shedding_category'].values)
+        self.energy_type = str(self.current_dog['energy_level_category'].values)
+        self.train_type = str(self.current_dog['trainability_category'].values)
+        self.demeanor = str(self.current_dog['demeanor_category'].values)
+        self.breed = str(self.current_dog['breeds.primary'].values)
+
+        # set session state from instance attributes
         if 'display_name' not in st.session_state:
-            st.session_state.display_name=display_name
+
+            st.session_state.display_name = self.display_name
         if 'display_description' not in st.session_state:
-            st.session_state.display_description=display_description
+
+            st.session_state.display_description = self.display_description
         if 'display_image' not in st.session_state:
-            st.session_state.display_image=display_image
+
+            st.session_state.display_image = self.display_image
         if 'current_dog' not in st.session_state:
-            st.session_state.current_dog=current_dog
+
+            st.session_state.current_dog = self.current_dog
         if 'env_children' not in st.session_state:
-            st.session_state.env_children=env_children
+
+            st.session_state.env_children = self.env_children
         if 'env_dogs' not in st.session_state:
-            st.session_state.env_dogs=env_dogs
+
+            st.session_state.env_dogs = self.env_dogs
         if 'env_cats' not in st.session_state:
-            st.session_state.env_cats=env_cats
+
+            st.session_state.env_cats = self.env_cats
         if 'house_trained' not in st.session_state:
-            st.session_state.house_trained=house_trained
+
+            st.session_state.house_trained = self.house_trained
         if 'special_needs' not in st.session_state:
-            st.session_state.special_needs=special_needs
+
+            st.session_state.special_needs = self.special_needs
         if 'breed_group' not in st.session_state:
-            st.session_state.breed_group=breed_group
+
+            st.session_state.breed_group = self.breed_group
         if 'groom_freq' not in st.session_state:
-            st.session_state.groom_freq=groom_freq
+
+            st.session_state.groom_freq = self.groom_freq
         if 'shed_freq' not in st.session_state:
-            st.session_state.shed_freq=shed_freq
+
+            st.session_state.shed_freq = self.shed_freq
         if 'energy_type' not in st.session_state:
-            st.session_state.energy_type=energy_type
+
+            st.session_state.energy_type = self.energy_type
         if 'train_type' not in st.session_state:
-            st.session_state.train_type=train_type
+
+            st.session_state.train_type = self.train_type
         if 'demeanor' not in st.session_state:
-            st.session_state.demeanor=demeanor
+
+            st.session_state.demeanor = self.demeanor
         if 'breed' not in st.session_state:
-            st.session_state.breed=breed
-        # set up actual first dog for user
-        self.new_dog()
+
+            st.session_state.breed = self.breed
+
 
 
 # ==============================================================================
@@ -178,35 +219,39 @@ dogs_petmatch = DogsPetmatch()
 
 dogs_petmatch.initial_setup()
 
-# access saved values from session
-display_name=st.session_state.display_name
-display_description=st.session_state.display_description
-display_image=st.session_state.display_image
-current_dog=st.session_state.current_dog
-env_children = st.session_state.env_children
-env_dogs = st.session_state.env_dogs
-env_cats  = st.session_state.env_cats
-house_trained = st.session_state.house_trained
-special_needs = st.session_state.special_needs
-breed_group = st.session_state.breed_group
-groom_freq = st.session_state.groom_freq
-shed_freq = st.session_state.shed_freq
-energy_type = st.session_state.energy_type
-train_type = st.session_state.train_type
-demeanor = st.session_state.demeanor
-breed = st.session_state.breed
+# set display attribuets from instance attributes
+display_name = dogs_petmatch.display_name
+display_description = dogs_petmatch.display_description
+display_image = dogs_petmatch.display_image
+current_dog = dogs_petmatch.current_dog
+env_children = dogs_petmatch.env_children
+env_dogs = dogs_petmatch.env_dogs
+env_cats  = dogs_petmatch.env_cats
+house_trained = dogs_petmatch.house_trained
+special_needs = dogs_petmatch.special_needs
+breed_group = dogs_petmatch.breed_group
+groom_freq = dogs_petmatch.groom_freq
+shed_freq = dogs_petmatch.shed_freq
+energy_type = dogs_petmatch.energy_type
+train_type = dogs_petmatch.train_type
+demeanor = dogs_petmatch.demeanor
+breed = dogs_petmatch.breed
 
-st.write(display_image[0])
+
 
 # st.image('https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/58980756/6/?bust=1669602382&width=600')
 st.title('PetMatch Playground')
 
-if display_image is not None:
-    st.image(display_image[0])
-
 # photo
+if display_image is not None:
+    st.write(display_image[0])
+    
+
+# header, description
 st.header(display_name)
 st.write(display_description)
+
+# add the expander
 with st.expander("See more details about this animal"):
     #add stuff to help people choose
     st.write("Good with Children:", env_children)
@@ -222,12 +267,16 @@ with st.expander("See more details about this animal"):
     st.write("Trainability:",train_type)
     st.write("General Breed Demeanor:",demeanor)
 
+# add like buttons
 col1, col2 = st.columns([1,1])
 with col1:
     if st.button('dislike'):
-        dogs_petmatch.disliked(current_dog) 
-        st.experimental_rerun() # required so UI reflects current values
+        dogs_petmatch.disliked(
+            current_dog
+            ) 
+        
 with col2:
     if st.button('like'):
-        dogs_petmatch.liked(current_dog) 
-        st.experimental_rerun() # required so UI reflects current values
+        dogs_petmatch.liked(
+            current_dog
+            ) 
