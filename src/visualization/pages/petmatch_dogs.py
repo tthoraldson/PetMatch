@@ -16,7 +16,7 @@ class DogsPetmatch:
         self.display_image = None
         self.display_description = None
         self.current_dog = None 
-        self.user = 'Matt' # TODO change this to non-hardcoded
+        self.user = 'Zsofi' # TODO change this to non-hardcoded
 
     @st.cache
     def get_dog_data(self):
@@ -272,13 +272,13 @@ with st.expander("See more details about this animal"):
 # add like buttons
 col1, col2 = st.columns([1,1])
 with col1:
-    if st.button('dislike'):
+    if st.button('Not For Me'):
         dogs_petmatch.disliked(
             current_dog
             ) 
         
 with col2:
-    if st.button('like'):
+    if st.button('Tell Me More'):
         dogs_petmatch.liked(
             current_dog
             ) 
