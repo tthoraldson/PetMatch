@@ -6,7 +6,7 @@ class CatsPetmatch:
 
     # TODO do not hardcode path to load cats data
     cats_path = '/app/data/version0_5/Adoptable_cats_20221125.csv'
-    saveFile = '/app/rankings/userRankings.txt'
+    saveFile = '/app/rankings/petmatch_rankings_cats.csv'
 
     # instance attrs
     def __init__(self):

@@ -6,7 +6,7 @@ class DogsPetmatch:
 
     # TODO do not hardcode path to load dogs data
     dogs_path = '/app/data/version0_5/Adoptable_dogs_20221202_withExtras.csv'
-    saveFile = '/app/data/rankings/userRankings.txt'
+    saveFile = '/app/rankings/petmatch_rankings_dogs.csv'
 
     def __init__(self):
         self.preferences = pd.DataFrame(columns=['user_name', 'dog_id', 'preference'])
@@ -15,7 +15,7 @@ class DogsPetmatch:
         self.display_name = None
         self.display_image = None
         self.display_description = None
-        self.current_dog = None
+        self.current_dog = None 
         self.user = 'Matt' # TODO change this to non-hardcoded
 
     @st.cache
@@ -77,7 +77,7 @@ class DogsPetmatch:
         filetoSave=self.saveFile
 
         
-        updateRow= pd.concat([preferences, pd.DataFrame({'user_name': user, 'dog_id': current_dog['id'], 'preference': 0})], ignore_index=True)
+        updateRow= pd.concat([self.preferences, pd.DataFrame({'user_name': self.user, 'dog_id': current_dog['id'], 'preference': 0})], ignore_index=True)
         print('disliked...calling new dog ')
         
         self.appendDFToCSV_void(updateRow,filetoSave) #save dataframe to csv in append mode
@@ -85,10 +85,11 @@ class DogsPetmatch:
 
     # registers a liked dog 
     def liked(self,current_dog):
-        # get fileSave from saved session
-        filetoSave=st.session_state.saveFile
         
-        updateRow = pd.concat([preferences, pd.DataFrame({'user_name': user, 'dog_id': current_dog['id'], 'preference': 1})], ignore_index=True)
+        # get fileSave from instance
+        filetoSave=self.saveFile
+        
+        updateRow = pd.concat([self.preferences, pd.DataFrame({'user_name': self.user, 'dog_id': current_dog['id'], 'preference': 1})], ignore_index=True)
         
         print('liked... calling ne dog')
         self.appendDFToCSV_void(updateRow,filetoSave) #save dataframe to csv in append mode
@@ -96,7 +97,7 @@ class DogsPetmatch:
 
     def find_photo(self,current_dog):
 
-        print(f"\n finding photos for current dog {current_Dog} \n ")
+        print(f"\n finding photos for current dog {current_dog} \n ")
         
         if not current_dog['photos'].empty:
             return current_dog['primary_photo_cropped.full']
@@ -140,14 +141,14 @@ class DogsPetmatch:
         if 'saveFile' not in st.session_state:
             st.session_state.saveFile=saveFile
         if 'preferences' not in st.session_state:
-            st.session_state.preferences=preferences
+            st.session_state.preferences=self.preferences
 
         # initialize session state for key dog instance variables if they don't already exist
         self.current_dog = self.sample_dogs.sample()
 
-        self.display_name = current_dog['name'].values[0]
+        self.display_name = self.current_dog['name'].values[0]
         self.display_description = str(self.current_dog['description_x'].values)
-        self.display_image= self.find_photo(current_dog).values
+        self.display_image= self.find_photo(self.current_dog).values
         self.env_children = str(self.current_dog['environment.children'].values)
         self.env_dogs = str(self.current_dog['environment.dogs'].values)
         self.env_cats  = str(self.current_dog['environment.cats'].values)
@@ -244,12 +245,13 @@ st.title('PetMatch Playground')
 
 # photo
 if display_image is not None:
-    st.write(display_image[0])
+    st.image(display_image[0])
     
 
 # header, description
 st.header(display_name)
 st.write(display_description)
+print(display_description[0])
 
 # add the expander
 with st.expander("See more details about this animal"):
