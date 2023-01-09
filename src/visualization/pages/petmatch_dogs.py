@@ -16,7 +16,7 @@ class DogsPetmatch:
         self.display_image = None
         self.display_description = None
         self.current_dog = None 
-        self.user = 'Zsofi' # TODO change this to non-hardcoded
+        self.user = None
 
     @st.cache
     def get_dog_data(self):
@@ -123,6 +123,10 @@ class DogsPetmatch:
 
     # @st.experimental_memo(suppress_st_warning=True)
     def initial_setup(self):
+
+        # set the username from session state
+        self.user = st.session_state.user
+
         saveFile = './rankings/petmatch_rankings_dogs.csv'
         sample_dogs = pd.read_csv(self.dogs_path, low_memory=False,header=0,index_col=0)
         

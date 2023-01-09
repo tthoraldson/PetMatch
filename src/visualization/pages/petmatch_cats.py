@@ -17,7 +17,7 @@ class CatsPetmatch:
         self.display_image = None
         self.display_description = None
         self.current_cat = None
-        self.user = 'Matt' # TODO change this to non-hardcoded
+        self.user = None 
 
     # use a cache decorator to optimize retrieval of pet data
     @st.cache
@@ -130,6 +130,9 @@ class CatsPetmatch:
 
     # @st.experimental_memo(suppress_st_warning=True)
     def initial_setup(self): # tell streamlit not to hash the parameter with an underscore
+
+        # set the username from session state
+        self.user = st.session_state.user
 
         saveFile = './rankings/petmatch_rankings_cats.csv' # TODO update this path
         

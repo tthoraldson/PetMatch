@@ -27,8 +27,25 @@ def intro():
         """
     )
 
-    user = st.selectbox(label='Select a user', options=['Theresa', 'Denise', 'Matt', 'Zsofi', 'Tibor', 'Klari'])
+    # store visibility in session state
+    if 'visibility' not in st.session_state:
+        st.session_state.disabled = False
+        st.session_state.name_entered = False
+    
+    if st.session_state.disabled == False:    
+        # allow user to enter a string name
+        # TODO profanity-filter
+        user : str = st.text_input(
+            label='Enter a username 20 char max.', 
+            max_chars=20,
+            placeholder='Sam Placeholder',
+            disabled=st.session_state.disabled
+        )
 
+        if type(user) == str:
+
+            # set session user in state
+            st.session_state['user'] = user
     return 'intro was run'
 
 intro()
