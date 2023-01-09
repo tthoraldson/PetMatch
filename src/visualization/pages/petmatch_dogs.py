@@ -282,7 +282,7 @@ with col1:
             ) 
         
 with col2:
-    if st.button('Tell Me More'):
+    if st.button('Like'):
         dogs_petmatch.liked(
             current_dog
             ) 

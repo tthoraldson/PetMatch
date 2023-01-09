@@ -236,12 +236,12 @@ with st.expander("See more details about this animal"):
 # add like buttons
 col1, col2 = st.columns([1,1])
 with col1:
-    if st.button('dislike'):
+    if st.button('Not For Me'):
         cats_petmatch.disliked(
                 cats_petmatch.current_cat
             )
 with col2:
-    if st.button('like'):
+    if st.button('Like'):
         cats_petmatch.liked(
                 cats_petmatch.current_cat
             )
