@@ -86,7 +86,7 @@ class CatsPetmatch:
         filetoSave = self.saveFile
 
         print('liked calling new cat...')
-        updateRow= pd.concat([self.preferences, pd.DataFrame({'user_name': self.user, 'cat_id': current_cat['id'], 'preference': 0})], ignore_index=True)
+        updateRow= pd.concat([self.preferences, pd.DataFrame({'user_name': self.user, 'cat_id': current_cat['id'], 'preference': 1})], ignore_index=True)
         
         
         self.appendDFToCSV_void(updateRow,filetoSave) #save dataframe to csv in append mode
