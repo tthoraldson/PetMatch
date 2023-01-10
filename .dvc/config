@@ -1,0 +1,4 @@
+[core]
+    remote = petmatch-dvc
+['remote "petmatch-dvc"']
+    url = ../data/dvc-local-remote

@@ -1,0 +1,1 @@
+""" Allow use of get_data applications as modules """

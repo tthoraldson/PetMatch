@@ -1,0 +1,4 @@
+# ignore the contents of this directory except for compressed files
+*
+!.gitignore
+!*.zip
