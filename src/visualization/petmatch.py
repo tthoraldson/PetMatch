@@ -13,7 +13,6 @@ def intro():
         This function operates the introduction page of PetMatch Streamlit app
     """
 
-
     # set title and description
     st.title('PetMatch Playground')
 

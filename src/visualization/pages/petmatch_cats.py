@@ -198,6 +198,9 @@ class CatsPetmatch:
 
 cats_petmatch = CatsPetmatch()
 
+if 'user' not in st.session_state:
+    st.error('Sorry, please click petmatch-start and enter your name to start the app')
+
 # initial setup of cats
 cats_petmatch.initial_setup()
 

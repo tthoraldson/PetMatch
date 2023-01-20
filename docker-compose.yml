@@ -11,7 +11,7 @@ services:
   # setup db
   db-setup:
     build:
-      context: ./db-setup
+      context: ./src/pet_match_stack/db-setup
       dockerfile: db-setup.Dockerfile
     # don't start before dynamo
     depends_on:
@@ -29,7 +29,7 @@ services:
   # streamlit
   streamlit:
     build:
-      context: ../visualization
+      context: ./src/visualization
       dockerfile: streamlit.Dockerfile
     # create shell
     tty: true
@@ -72,9 +72,26 @@ services:
         # allow writing to the volume
         read_only: false
 
+      # create a new named volume for application visualization code
+      - type: volume
+      # use the named volume as the source
+        source: code
+        # i.e. your local_dir_absolute path will be mounted to target of next section (bind)
+        target: /Users/mattrobinson/fourth-brain/capstone/PetMatch/src/visualization
+        volume:
+          # allow copying
+          nocopy: false
+      - type: bind
+        # use the named volume's target as the source
+        source: /Users/mattrobinson/fourth-brain/capstone/PetMatch/src/visualization
+        target: /app
+        # allow writing to the volume
+        read_only: false
+
 volumes:
   pet-data:
   user-rankings:
+  code:
 
 
 # make sure to add containers to this network
