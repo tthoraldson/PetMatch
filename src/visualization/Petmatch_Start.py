@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import get_user_prefs
 
 # Intro page to PetMatch App
 
@@ -12,6 +13,7 @@ def intro():
     """
         This function operates the introduction page of PetMatch Streamlit app
     """
+    st.session_state['user_preferences'] = {}
 
     # set title and description
     st.title('PetMatch Playground')
@@ -40,15 +42,21 @@ def intro():
             placeholder='Sam Placeholder',
             disabled=st.session_state.disabled
         )
-
-        if type(user) == str:
-
+        
+        if not user:
+            st.stop()
+        else:
             # set session user in state
             st.session_state['user'] = user
 
             if st.session_state['user'] is not '':
                 st.success(f"Welcome {user}. We hope you find your new best friend!")
+                
+                # run the user data collection for preferences and pet recommendations
+                get_user_prefs.get_prefs()
 
+                st.write('You selected:',st.session_state['user_preferences'])
+                
     return 'intro was run'
 
 intro()
