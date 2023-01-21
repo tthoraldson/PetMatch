@@ -45,6 +45,10 @@ def intro():
 
             # set session user in state
             st.session_state['user'] = user
+
+            if st.session_state['user'] is not '':
+                st.success(f"Welcome {user}. We hope you find your new best friend!")
+
     return 'intro was run'
 
 intro()

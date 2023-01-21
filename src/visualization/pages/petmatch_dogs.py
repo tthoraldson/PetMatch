@@ -224,7 +224,7 @@ dogs_petmatch = DogsPetmatch()
 
 if st.session_state['user'] is '':
     st.error(
-        f"""Sorry, please click petmatch-start and enter your name to start the app.
+        f"""Sorry, please click 'Petmatch Start' and enter your name to start the app.
         """
     )
     st.stop()
