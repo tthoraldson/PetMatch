@@ -1,7 +1,20 @@
 import streamlit as st
+import re 
 
+
+regex = re.compile(r"([-!#-'*+/-9=?A-Z^-~]+(\.[-!#-'*+/-9=?A-Z^-~]+)*|\"([]!#-[^-~ \t]|(\\[\t -~]))+\")@([-!#-'*+/-9=?A-Z^-~]+(\.[-!#-'*+/-9=?A-Z^-~]+)*|\[[\t -Z^-~]*])")
+
+def is_valid(email):
+    """ validates user emails """
+    if re.fullmatch(regex, email):
+        return True
+    else:
+        return False
 
 def get_prefs():
+
+    # set email as blank
+    st.session_state['email'] = ''
 
     # set default values
     dog_size  = None
@@ -19,7 +32,9 @@ def get_prefs():
 
         # text input
         full_name = st.text_input("What's your full name?")
-        email = st.text_input("What's your email?")
+
+        session_email = st.session_state['email']
+        email = st.text_input("What's your email?",placeholder='Jax Doe')
         zip_code = st.number_input("Whats your zip code?",max_value=99999,min_value=00000)
         readiness = st.radio("How ready are you to adopt?",("Not ready","Somewhat ready","Very ready","Just curious"))
         age = st.number_input("How old are you?",max_value=120,min_value=4)
@@ -56,46 +71,60 @@ def get_prefs():
         'Good with kids'
         'Good with other animals',
         'Bonded Pairs',
-        'Older',
-        'Younger',
-        'Middle Aged'
+        'Senior',
+        'Youth',
+        'Adolescent',
+        'OK with an animal in recovery',
+        'Quiet',
+        'Talkative'
             ]
         )
-        form_sub = st.form_submit_button("Submit")
-        if form_sub:
-            user_prefs.update(
-                {
-                # conditionally add the animal pref 
-                'dog_size': dog_size if dog_size else None,
-                'dog_energy': dog_energy if dog_energy else None,
-                'dog_breed': dog_breed if dog_breed else None,
-                'cat_size': cat_size if cat_size else None,
-                'cat_energy': cat_energy if cat_energy else None,
-                'cat_breed': cat_breed if cat_breed else None,
-                }
-            )
 
+        
 
-            # TODO fix the multi-select
-            # add other preferences from the multi-select
-            # user_prefs.update(
-            #     {v: True} for _indx,v in enumerate(preferences)
-            # )
+        # TODO validate emails
+        email_valid = is_valid(email)
+        # if not email_valid:
+        #     st.error('Email invalid. Enter a valid email.')
+        # else:
+        #     st.success('Valid email')
+        form_sub = st.form_submit_button("Submit", on_click=is_valid(session_email))
 
-            user_prefs.update(
-                {
-                    'full_name': full_name,
-                    'email': email,
-                    'zip_code': zip_code,
-                    'readiness': readiness,
-                    'age': age,
-                    'g_expression': g_expression,
-                    'has_current_pets': has_current_pets,
-                    'current_pets': current_pets           
-                }
-            )
+        user_prefs.update(
+            {
+            # conditionally add the animal pref 
+            'dog_size': dog_size if dog_size else None,
+            'dog_energy': dog_energy if dog_energy else None,
+            'dog_breed': dog_breed if dog_breed else None,
+            'cat_size': cat_size if cat_size else None,
+            'cat_energy': cat_energy if cat_energy else None,
+            'cat_breed': cat_breed if cat_breed else None,
+            }
+        )
 
-            st.session_state['user_preferences'] = user_prefs
+        # add other preferences from the multi-select
+        for _indx,v in enumerate(preferences):
+            if v == None:
+                continue
+            else:
+                user_prefs.update(
+                    {v: True} 
+                )
+
+        user_prefs.update(
+            {
+                'full_name': full_name,
+                'email': email,
+                'zip_code': zip_code,
+                'readiness': readiness,
+                'age': age,
+                'g_expression': g_expression,
+                'has_current_pets': has_current_pets,
+                'current_pets': current_pets           
+            }
+        )
+
+        st.session_state['user_preferences'] = user_prefs
 
     return user_prefs
     

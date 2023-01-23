@@ -6,4 +6,4 @@ aws dynamodb create-table \
     --attribute-definitions AttributeName=userId,AttributeType=N  \
     --key-schema AttributeName=userId,KeyType=HASH  \
     --billing-mode PAY_PER_REQUEST  \
-    --endpoint-url "http://${dynamo}:8000"
+    --endpoint-url "http://${dynamo}:8001"
