@@ -75,7 +75,7 @@ services:
       AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY' # See: https://github.com/awsdocs/amazon-dynamodb-developer-guide/blob/master/doc_source/DynamoDBLocal.UsageNotes.md
       AWS_DEFAULT_REGION: us-east-1
       AWS_DYNAMODB_ENDPOINT: http://dynamodb:8001
-      AWS_DYNAMODB_TABLE: pet_match
+      # AWS_DYNAMODB_TABLE: pet_match
       REGION: 'us-east-1'
     # mount data to streamlit container
     volumes:
