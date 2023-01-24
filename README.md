@@ -61,7 +61,22 @@ Project Organization
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
+--------
+**Project Pitch Slides:** /reports/PetMatch_presentationSlides_20230123.pdf  
+**Project Software Architecture Diagram:** /reports/figures/PetMatch_SystemDiagram_20230123.png  
 
+**Still Need to Build:**  
+* Collaborative Filtering v2 Cats  
+* Collaborative Filtering v1 Dogs  
+* Incorporate best content-based filtering model for cats and dogs into MLE Stack  
+* Incorporate best collaborative filtering model for cats and dogs into MLE Stack  
+* Finish setting up deployment stack  
+* UI upgrades deployment (user cold-start preferences, etc..)    
+
+**Future Work:**  
+* Continue collecting user rankings  
+* Add timestamp to user rankings for time-sensitive recommendations  
+* Incorporate distance more effectively into models  
 --------
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
