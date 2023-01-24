@@ -1,3 +1,4 @@
+import time
 import streamlit as st
 import pandas as pd
 import os 
@@ -197,6 +198,13 @@ class CatsPetmatch:
 
 
 cats_petmatch = CatsPetmatch()
+
+if st.session_state['user'] is '':
+    st.error(
+        f"""Sorry, please click 'Petmatch Start' and enter your name to start the app.
+        """
+    )
+    st.stop()
 
 # initial setup of cats
 cats_petmatch.initial_setup()

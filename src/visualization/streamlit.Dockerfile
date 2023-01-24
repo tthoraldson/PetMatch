@@ -36,4 +36,4 @@ COPY ./pages/* /app/pages/
 RUN pip3 install -r requirements.txt
 
 # go
-ENTRYPOINT ["streamlit", "run", "petmatch.py", "--server.port=8501", "--server.address=0.0.0.0"]
+ENTRYPOINT ["streamlit", "run", "Petmatch_Start.py", "--server.port=8501", "--server.address=0.0.0.0"]
