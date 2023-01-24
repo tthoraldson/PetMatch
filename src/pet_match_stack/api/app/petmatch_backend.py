@@ -8,7 +8,7 @@ app = FastAPI()
 def root():
     a = "a"
     b = "b" + a
-    return {"hello world": b}
+    return {"hello cats": b}
 
 
 if __name__ == "__main__":

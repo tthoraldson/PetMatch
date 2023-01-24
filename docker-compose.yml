@@ -44,6 +44,9 @@ services:
       dockerfile: fastapi.Dockerfile
     # create shell
     tty: true
+    # mount local user data file to fastapi container
+    volumes:
+      - "./src/pet_match_stack/api/app:/src/app"
     ports: 
       - "8086:8086"
     # links to dynamo
