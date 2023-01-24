@@ -37,6 +37,21 @@ services:
     networks: 
     - pet_match_network
 
+  # fastapi backend
+  fastapi:
+    build:
+      context: ./src/api/pet_match_stack
+      dockerfile: fastapi.Dockerfile
+    # create shell
+    tty: true
+    ports: 
+      - "8086:8086"
+    # links to dynamo
+    links:
+      - dynamo
+    networks:
+    - pet_match_network
+
   # streamlit
   streamlit:
     build:
