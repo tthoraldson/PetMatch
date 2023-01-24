@@ -40,7 +40,7 @@ services:
   # fastapi backend
   fastapi:
     build:
-      context: ./src/api/pet_match_stack
+      context: ./src/pet_match_stack/api
       dockerfile: fastapi.Dockerfile
     # create shell
     tty: true

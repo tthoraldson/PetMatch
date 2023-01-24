@@ -9,10 +9,6 @@ import requests
 
 app = FastAPI()
 
-import config
-# import keys from config.py
-PETMATCH_API = config.PETMATCH_API
-
 # fastapi model
 class PetMatchQuery(BaseModel):
     """PetMatch Query base model"""
