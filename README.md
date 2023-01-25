@@ -67,7 +67,7 @@ Project Organization
 
 **Still Need to Build:**  
 * Collaborative Filtering v2 Cats  
-* Collaborative Filtering v1 Dogs  
+* Collaborative Filtering v2 Dogs  
 * Incorporate best content-based filtering model for cats and dogs into MLE Stack  
 * Incorporate best collaborative filtering model for cats and dogs into MLE Stack  
 * Finish setting up deployment stack  
