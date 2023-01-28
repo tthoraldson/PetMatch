@@ -83,12 +83,12 @@ services:
         # use the named volume as the source
         source: pet-data
         # i.e. your local_dir_absolute path will be mounted to target of next section (bind)
-        target: /Users/mattrobinson/fourth-brain/capstone/PetMatch/data/raw
+        target: $BASE_PATH/data/raw
         volume:
           nocopy: true
       - type: bind
         # use the named volume's target as the source
-        source: /Users/mattrobinson/fourth-brain/capstone/PetMatch/data/raw
+        source: $BASE_PATH/data/raw
         target: /app/data
         # do not allow app interface to write to pet-data volume
         read_only: true
@@ -98,13 +98,13 @@ services:
       # use the named volume as the source
         source: user-rankings
         # i.e. your local_dir_absolute path will be mounted to target of next section (bind)
-        target: /Users/mattrobinson/fourth-brain/capstone/PetMatch/data/rankings
+        target: $BASE_PATH/data/rankings
         volume:
           # allow copying
           nocopy: false
       - type: bind
         # use the named volume's target as the source
-        source: /Users/mattrobinson/fourth-brain/capstone/PetMatch/data/rankings
+        source: $BASE_PATH/data/rankings
         target: /app/rankings
         # allow writing to the volume
         read_only: false
@@ -114,13 +114,13 @@ services:
       # use the named volume as the source
         source: code
         # i.e. your local_dir_absolute path will be mounted to target of next section (bind)
-        target: /Users/mattrobinson/fourth-brain/capstone/PetMatch/src/visualization
-        volume:
+        target: $BASE_PATH/src/visualization
+        volume: 
           # allow copying
           nocopy: false
       - type: bind
         # use the named volume's target as the source
-        source: /Users/mattrobinson/fourth-brain/capstone/PetMatch/src/visualization
+        source: ./src/visualization
         target: /app
         # allow writing to the volume
         read_only: false
