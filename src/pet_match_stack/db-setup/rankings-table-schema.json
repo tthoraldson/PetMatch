@@ -1,0 +1,26 @@
+{
+    "AttributeDefinitions": [
+      {
+        "AttributeName": "user_id",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "pet_id",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "response",
+        "AttributeType": "N"
+      }
+    ],
+    "KeySchema": [
+      {
+        "AttributeName": "user_id",
+        "KeyType": "HASH"
+      },
+      {
+        "AttributeName": "pet_id",
+        "KeyType": "RANGE"
+      }
+    ]
+  }

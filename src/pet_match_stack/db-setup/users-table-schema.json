@@ -1,0 +1,79 @@
+
+{
+    "Attribute-definitions": [
+        {
+            "Attribute-name": "user_id",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "timestamp",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "dog_size",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "dog_energy",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "dog_breed",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "cat_size",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "cat_energy",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "cat_breed",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "full_name",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "email",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "zip_code",
+            "attribute-type": "N"
+        },
+        {
+            "attribute-name": "readiness",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "age",
+            "attribute-type": "N"
+        },
+        {
+            "attribute-name": "g_expression",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "has_current_pets",
+            "attribute-type": "S"
+        },
+        {
+            "attribute-name": "current_pets",
+            "attribute-type": "S"
+        }
+    ],
+    "key-schema": [
+        {
+            "attribute-name": "user_id",
+            "key-type": "HASH"
+        },
+        {
+            "attribute-name": "timestamp",
+            "key-type": "RANGE"
+        }
+    ]
+}

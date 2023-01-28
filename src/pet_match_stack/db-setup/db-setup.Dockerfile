@@ -15,7 +15,7 @@ RUN aws configure set aws_access_key_id dummyid && \
 COPY ./setup.sh /setup.sh
 
 # install tools to edit text, debug, network, curl, etc
-RUN yum install -y which tree nano iputils net-tools
+RUN yum install -y which tree nano iputils net-tools jq curl
 
 # keep alive
 ENTRYPOINT ["sh","/setup.sh"]
