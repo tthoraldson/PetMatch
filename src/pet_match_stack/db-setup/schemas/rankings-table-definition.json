@@ -1,0 +1,32 @@
+{
+  "TableName": "Rankings",
+  "AttributeDefinitions": [
+      {
+          "AttributeName": "user_id",
+          "AttributeType": "S"
+      },
+      {
+          "AttributeName": "pet_id",
+          "AttributeType": "S"
+      },
+      {
+          "AttributeName": "response",
+          "AttributeType": "B"
+      }
+  ],
+  "KeySchema": [
+      {
+          "AttributeName": "user_id",
+          "KeyType": "HASH"
+      },
+      {
+          "AttributeName": "pet_id",
+          "KeyType": "RANGE"
+      },
+      {
+          "AttributeName": "response",
+          "KeyType": "RANGE"
+      }
+  ],
+  "BillingMode": "PAY_PER_REQUEST"
+}

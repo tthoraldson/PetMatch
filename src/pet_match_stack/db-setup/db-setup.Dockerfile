@@ -14,8 +14,11 @@ RUN aws configure set aws_access_key_id dummyid && \
 # move database setup script into place
 COPY ./setup.sh /setup.sh
 
+# move json schemas into place
+COPY ./schemas /schemas
+
 # install tools to edit text, debug, network, curl, etc
 RUN yum install -y which tree nano iputils net-tools jq curl
 
-# keep alive
+# run shell script to create database
 ENTRYPOINT ["sh","/setup.sh"]

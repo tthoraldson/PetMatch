@@ -7,7 +7,7 @@ here's an example of a DynamoDB table schema that uses a unique user id as the p
 ### Table Name: "UserPreferences"
 
 - Primary key: "user_id" (string)
-Sort key: "timestamp" (number) - This can be a timestamp generated - by DynamoDB when a new item is added
+Sort key: "timestamp" (string) - This can be a timestamp generated - by DynamoDB when a new item is added
 - "dog_size" (string)
 - "dog_energy" (string)
 - "dog_breed" (string)
@@ -37,7 +37,7 @@ here's an example of a DynamoDB table schema for a table called "Rankings" that 
 
 - Primary key: "user_id" (string) - foreign key to the "user_id" primary key in the other table
 - Sort key: "pet_id" (string)
-- "response" (number)
+- "response" (binary)
 
 
 This table allows you to store the ranking made by a user to a specific pet. The primary key is "user_id" which is a foreign key to the "user_id" primary key in the other table, and the sort key is "pet_id" which allows you to query for all the ranking made by a user to a specific pet.
