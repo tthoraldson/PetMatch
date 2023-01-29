@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
 import Matches from 'views/matches';
+import Preferences from 'views/preferences';
 
 
 
@@ -35,6 +36,11 @@ const App = () => {
         {
             path: 'matches',
             element: <Matches />,
+            errorElement: <ErrorPage />,
+        },
+        {
+            path: 'preferences',
+            element: <Preferences />,
             errorElement: <ErrorPage />,
         }
       ]);

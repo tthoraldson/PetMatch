@@ -1,4 +1,6 @@
 import React from 'react';
+import LoginButton from 'utils/login';
+import LogoutButton from 'utils/logout';
 import Page from '../components/page';
 
 export async function loader() {
@@ -10,6 +12,8 @@ function Landing() {
     return (
         <Page title='PetMatch'>
             <h1>Hello!</h1>
+            <LoginButton/>
+            <LogoutButton/>
         </Page>
     )
 }

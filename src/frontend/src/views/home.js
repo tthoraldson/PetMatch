@@ -10,7 +10,7 @@ export async function loader() {
 function Home() {
   return (
       <Page>
-          <h1>About</h1>
+          <h1>PetMatch is NEAT!</h1>
       </Page>
   )
 }
