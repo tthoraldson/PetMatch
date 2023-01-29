@@ -7,7 +7,7 @@ here's an example of a DynamoDB table schema that uses a unique user id as the p
 ### Table Name: "UserPreferences"
 
 - Primary key: "user_id" (string)
-Sort key: "timestamp" (string) - This can be a timestamp generated - by DynamoDB when a new item is added
+Sort key: "timestamp" (string) 
 - "dog_size" (string)
 - "dog_energy" (string)
 - "dog_breed" (string)
@@ -32,18 +32,29 @@ You can also create secondary indexes on other attributes, such as "email", "zip
 
 ### Table Name: "Rankings"
 
-here's an example of a DynamoDB table schema for a table called "Rankings" that has a foreign key to the "user_id" primary key in the other table, and has the following attributes:
+here's an example of a DynamoDB table schema for a table called "Rankings" that has a foreign key to the "user_id" primary key in the UserPreferences table, and has the following attributes:
 
 
 - Primary key: "user_id" (string) - foreign key to the "user_id" primary key in the other table
 - Sort key: "pet_id" (string)
+- Global secondary key: "timestamp" (string)
 - "response" (binary)
+
 
 
 This table allows you to store the ranking made by a user to a specific pet. The primary key is "user_id" which is a foreign key to the "user_id" primary key in the other table, and the sort key is "pet_id" which allows you to query for all the ranking made by a user to a specific pet.
 
 You can also create secondary indexes on other attributes, such as "pet_id" to allow for more flexible querying of ranking made by a specific pet.
 
+## UserFeedback table
+
+### Table Name: "UserFeedback"
+
+- Primary key: "user_id" (string) - foreign key to the "user_id" primary key in the other table
+- Sort key: "score" (number)
+- Global secondary key: "timestamp" (string)
+
+here's an example of a DynamoDB table schema for a table called "UserFeedback" that has a foreign key to the "user_id" primary key in the UserPreferences table, and has the following attributes:
 
 ## Expanding the schema for collaborative filtering and content-based filtering
 

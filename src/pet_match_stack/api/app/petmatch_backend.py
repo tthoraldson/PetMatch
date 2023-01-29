@@ -36,8 +36,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-table_name = 'users_table'
-
 dynamo = boto3.client(
         'dynamodb', 
         endpoint_url='http://dynamo:8001',
@@ -53,24 +51,33 @@ def root():
     b = "b" + a
     return {"hello cats": b}
 
-@app.get("/petmatch/")
-def petmatch():
+class Ranking(BaseModel):
+    user_id : str
+    pet_id : str
+    response : bool
+
+@app.post("/petmatch/put_ranking")
+def petmatch_put_ranking(ranking:Ranking):
+
+    rankings_table = 'Rankings'
 
     # define the data to be inserted into the table
-    data = {
-        "userId": {
-            "N": "2"
-        },
-        "name": {
-            "S": "Test Doe"
-        },
-        "email": {
-            "S": "johndoe@example.com"
-        }
-    }
+    data = ranking.json()
+
+    data = json.loads(data)
+
+    # get current timestamp as  a string
+    now = str(datetime.datetime.now())
 
     # insert the data into the table
-    response = dynamo.put_item(TableName=table_name, Item=data)
+    response = dynamo.put_item(
+            TableName=rankings_table, 
+            Item={
+                'user_id': {'S': data['user_id']},
+                'timestamp': {'S': now } ,
+                'user_preferences' : {'S': json.dumps(data)}
+            }
+        )
 
     # check the status code of the response
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -97,9 +104,6 @@ class Preference(BaseModel):
     cat_breed : Union[str,None] = None
     user_prefs : Union[list,None] = None
 
-
-
-
 @app.post("/petmatch/put_preferences/")
 def petmatch_put_preferences(prefs: Preference):
 
@@ -117,7 +121,7 @@ def petmatch_put_preferences(prefs: Preference):
     response = dynamo.put_item(
             TableName=users_table, 
             Item={
-                'user_id': {'S': str(uuid.uuid4())},
+                'user_id': {'S': data['user_id']},
                 'timestamp': {'S': now } ,
                 'user_preferences' : {'S': json.dumps(data)}
             }
@@ -130,6 +134,44 @@ def petmatch_put_preferences(prefs: Preference):
         print("Failed to insert data. Error: ", response)
 
     return json.dumps(response)
+
+
+class UserFeedback(BaseModel):
+    user_id: str
+    score: float
+    timestamp: str
+
+@app.post("/petmatch/put_feedback")
+def petmatch_put_feedback(feedback: UserFeedback):
+
+    feedback_table = 'UserFeedback'
+
+    # define the data to be inserted into the table
+    data = feedback.json()
+
+    data = json.loads(data)
+
+    # get current timestamp as  a string
+    now = str(datetime.datetime.now())
+
+    # insert the data into the table
+    response = dynamo.put_item(
+            TableName=feedback_table, 
+            Item={
+                'user_id': {'S': data['user_id']},
+                'timestamp': {'S': now } ,
+                'score' : {'S': data['score']}
+            }
+        )
+
+    # check the status code of the response
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        print("Data inserted successfully!")
+    else:
+        print("Failed to insert data. Error: ", response)
+
+    return json.dumps(response)
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8086)
