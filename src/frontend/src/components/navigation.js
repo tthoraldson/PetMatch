@@ -32,10 +32,12 @@ function Navigation() {
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+    console.warn('clicked')
   };
 
-  const handleCloseUserMenu = () => {
+  const handleCloseUserMenu = (event) => {
     setAnchorElUser(null);
+    console.warn('clicked', event);
   };
 
   return (
@@ -52,6 +54,7 @@ function Navigation() {
               onClick={handleOpenNavMenu}
               color="inherit"
             >
+            PetMatch
               <MenuIcon />
             </IconButton>
             <Menu

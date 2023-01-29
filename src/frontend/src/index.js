@@ -1,6 +1,6 @@
 import React from "react";
 import "./index.css";
-import App from "./app";
+import App from "./App";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { getConfig } from "./config";
 import { createRoot } from "react-dom/client";
@@ -14,7 +14,6 @@ const providerConfig = {
   clientId: config.clientId,
   authorizationParams: {
     redirect_uri: window.location.origin,
-    ...(config.audience ? { audience: config.audience } : null),
   },
 };
 
