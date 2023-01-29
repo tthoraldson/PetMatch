@@ -13,6 +13,12 @@ Team
 * Theresa Thoraldson  
 * Matthew Robinson  
 
+Local Docker
+------------
+- To run all required containers locally, run `BASE_PATH='<Path to this repo!>' docker compose up`
+  - For example: `BASE_PATH='/Users/theresa/Desktop/source/PetMatch' docker compose up`
+
+
 Project Organization
 ------------
 
