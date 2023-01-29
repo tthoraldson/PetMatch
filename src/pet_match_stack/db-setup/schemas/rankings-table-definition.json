@@ -8,10 +8,6 @@
       {
           "AttributeName": "pet_id",
           "AttributeType": "S"
-      },
-      {
-          "AttributeName": "response",
-          "AttributeType": "B"
       }
   ],
   "KeySchema": [
@@ -21,10 +17,6 @@
       },
       {
           "AttributeName": "pet_id",
-          "KeyType": "RANGE"
-      },
-      {
-          "AttributeName": "response",
           "KeyType": "RANGE"
       }
   ],

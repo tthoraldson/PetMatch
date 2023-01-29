@@ -51,6 +51,21 @@ def root():
     b = "b" + a
     return {"hello cats": b}
 
+@app.get("/verify-dynamo")
+def verify_dynamo():
+
+
+    # insert the data into the table
+    response = dynamo.list_tables()
+
+    # check the status code of the response
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        print("Data inserted successfully!")
+    else:
+        print("Failed to insert data. Error: ", response)
+
+    return json.dumps(response)
+
 class Ranking(BaseModel):
     user_id : str
     pet_id : str
