@@ -8,6 +8,8 @@
 }
 ```
 - Poke Theresa for secrets
+- `npm start`
+- Docker??
 
 
 
