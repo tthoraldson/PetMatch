@@ -1,25 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { StrictMode } from 'react';
+import './index.css';
+import ErrorPage from './views/errorpage';
+import About from './views/about';
+import Landing from './views/landing';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import {
+  createBrowserRouter, RouterProvider,
+} from "react-router-dom";
+import { useAuth0 } from '@auth0/auth0-react';
+import Matches from 'views/matches';
+
+
+
+const App = () => {
+    const { error } = useAuth0();
+  
+    if (error) {
+      return <div>Oops... {error.message}</div>;
+    }
+  
+    const router = createBrowserRouter([
+        {
+          path: '/',
+          element: <Landing />,
+          errorElement: <ErrorPage />,
+          //loader: homeLoader,
+        },
+        {
+          path: 'about',
+          element: <About />,
+          errorElement: <ErrorPage />,
+          //loader: postLoader,
+        },
+        {
+            path: 'matches',
+            element: <Matches />,
+            errorElement: <ErrorPage />,
+        }
+      ]);
+      
+      return (
+        <StrictMode>
+          <RouterProvider router={router} />
+        </StrictMode>
+      );
 }
 
-export default App;
+  export default App;

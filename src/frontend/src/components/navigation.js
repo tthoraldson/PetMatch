@@ -15,7 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 
-const pages = ['Products', 'Matches', 'About'];
+const pages = ['Find', 'Matches', 'About'];
 const settings = ['Preferences', 'Logout'];
 
 function Navigation() {
@@ -27,6 +27,7 @@ function Navigation() {
   };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
+    console.warn('handleOpenUserMenu', event)
   };
 
   const handleCloseNavMenu = () => {

@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect } from 'react';
-import Navigation from './components/navigation';
+import Navigation from './navigation';
+// import Footer from './footer';
 
 export default function Page(props) {
   useEffect(() => {
@@ -9,8 +10,8 @@ export default function Page(props) {
   return (
     <Fragment>
       <Navigation />
-        <h1>{props.title}</h1>
       <main>{props.children}</main>
+      {/* <Footer /> */}
     </Fragment>
   );
 }

@@ -1,37 +1,29 @@
-import React, { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import Home from './views/home';
-import ErrorPage from './views/errorpage';
-import About from './views/about';
-// import { Auth0Provider } from "@auth0/auth0-react";
+import React from "react";
+import "./index.css";
+import App from "./app";
+import { Auth0Provider } from "@auth0/auth0-react";
+import { getConfig } from "./config";
+import { createRoot } from "react-dom/client";
 
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+// Please see https://auth0.github.io/auth0-react/interfaces/Auth0ProviderOptions.html
+// for a full list of the available properties on the provider
+const config = getConfig();
+
+const providerConfig = {
+  domain: config.domain,
+  clientId: config.clientId,
+  authorizationParams: {
+    redirect_uri: window.location.origin,
+    ...(config.audience ? { audience: config.audience } : null),
+  },
+};
+
 
 const container = document.getElementById('root');
 const root = createRoot(container);
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Home />,
-    errorElement: <ErrorPage />,
-    //loader: homeLoader,
-  },
-  {
-    path: 'about',
-    element: <About />,
-    errorElement: <ErrorPage />,
-    //loader: postLoader,
-  },
-]);
-
 root.render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>
+  <Auth0Provider {...providerConfig}>
+    <App />
+  </Auth0Provider>,
 );
-
