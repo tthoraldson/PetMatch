@@ -48,17 +48,16 @@ def get_prefs():
 
         # text input
         pet_type = st.radio("What type of pet are you looking for?",("Dog","Cat"))
+        animal_size = st.radio("What size of pet are you looking for?",("Small","Medium","Large")) 
+        animal_energy = st.radio("What level of energy are you looking for?",("Low","Medium","High"))
 
-        if pet_type == "Dog":
-            dog_size = st.radio("What size of dog are you looking for?",("Small","Medium","Large"))
-            dog_energy = st.radio("What level of energy are you looking for?",("Low","Medium","High"))
-            dog_breed = st.radio("What breed(s) are you looking for?",("Mixed Breed","Pit Bull","Husky","Labrador","Golden Retriever","Other"))
+        # if pet_type == "Dog":
+        #     dog_breed = st.radio("What breed(s) are you looking for?",("Mixed Breed","Pit Bull","Husky","Labrador","Golden Retriever","Other"))
         
-        if pet_type == "Cat":
-            cat_size = st.radio("What size of cat are you looking for?",("Small","Medium","Large")) 
-            cat_energy = st.radio("What level of energy are you looking for?",("Low","Medium","High"))
-            cat_breed = st.radio("What breed(s) are you looking for?",("Mixed Breed","Siamese","Persian","Maine Coon","Ragdoll"))
+        # if pet_type == "Cat":
+        #     cat_breed = st.radio("What breed(s) are you looking for?",("Mixed Breed","Siamese","Persian","Maine Coon","Ragdoll"))
         
+        # TODO Turn this into single selects
         preferences: list = st.multiselect(
             "Select which of these apply to your ideal pet:",
             [
@@ -93,12 +92,10 @@ def get_prefs():
         user_prefs.update(
             {
             # conditionally add the animal pref 
-            'dog_size': dog_size if dog_size else None,
-            'dog_energy': dog_energy if dog_energy else None,
-            'dog_breed': dog_breed if dog_breed else None,
-            'cat_size': cat_size if cat_size else None,
-            'cat_energy': cat_energy if cat_energy else None,
-            'cat_breed': cat_breed if cat_breed else None,
+            # 'dog_breed': dog_breed if dog_breed else None,
+            # 'cat_breed': cat_breed if cat_breed else None,
+            'animal_size': cat_size if cat_size else None,
+            'animal_energy': cat_energy if cat_energy else None,
             }
         )
 
