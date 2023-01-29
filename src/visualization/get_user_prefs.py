@@ -88,7 +88,7 @@ def get_prefs():
         #     st.error('Email invalid. Enter a valid email.')
         # else:
         #     st.success('Valid email')
-        form_sub = st.form_submit_button("Submit", on_click=is_valid(session_email))
+        form_sub = st.form_submit_button("Submit")
 
         user_prefs.update(
             {
@@ -103,13 +103,16 @@ def get_prefs():
         )
 
         # add other preferences from the multi-select
-        for _indx,v in enumerate(preferences):
-            if v == None:
-                continue
-            else:
-                user_prefs.update(
-                    {v: True} 
-                )
+        # for _indx,v in enumerate(preferences):
+        #     if v == None:
+        #         continue
+        #     else:
+        #         user_prefs.update(
+        #             {v: True} 
+        #         )
+        user_prefs.update(
+            {'user_prefs' : preferences}
+        )
 
         user_prefs.update(
             {

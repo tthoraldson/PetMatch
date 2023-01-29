@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import get_user_prefs
+import requests
+import json
 
 # Intro page to PetMatch App
 
@@ -49,13 +51,21 @@ def intro():
             # set session user in state
             st.session_state['user'] = user
 
-            if st.session_state['user'] is not '':
+            if st.session_state['user'] != '':
                 st.success(f"Welcome {user}. We hope you find your new best friend!")
                 
                 # run the user data collection for preferences and pet recommendations
                 get_user_prefs.get_prefs()
 
                 st.write('You selected:',st.session_state['user_preferences'])
+
+                # store user preferences in dynamodb 
+                url = "http://fastapi:8086/petmatch/put_preferences/"
+                json_data = json.dumps(st.session_state['user_preferences'])
+                st.write(json_data)
+                response = requests.post(url, data=json_data)
+                st.write(f"API Request status: {response.status_code} {response.reason} {response.text}")
+
                 
     return 'intro was run'
 
