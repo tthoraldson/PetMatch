@@ -1,9 +1,13 @@
 #!/usr/bin/env sh
 
 # This script is used to setup the dynamodb database for the pet_match_stack project.
-aws dynamodb create-table \
-    --table-name users_table  \
-    --attribute-definitions AttributeName=userId,AttributeType=N  \
-    --key-schema AttributeName=userId,KeyType=HASH  \
-    --billing-mode PAY_PER_REQUEST  \
-    --endpoint-url "http://${dynamo}:8001"
+
+# create tables
+aws dynamodb create-table --cli-input-json file:///schemas/users-table-definition.json --endpoint-url "http://dynamo:8001"
+
+aws dynamodb create-table --cli-inputjson file:///schemas/rankings-table-definition.json --endpoint-url "http://dynamo:8001"
+
+aws dynamodb create-table --cli-inputjson file:///schemas/user-feedback-table-definition.json --endpoint-url "http://dynamo:8001"
+
+# TODO
+# finish table setup with secondary indexes, etc
