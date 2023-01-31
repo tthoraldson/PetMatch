@@ -29,6 +29,10 @@ export default function MenuAppBar() {
     navigate('/preferences');
   }
 
+  const goToHome = () => {
+    navigate('/home');
+  }
+
   const logoutButton = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
   }
@@ -46,9 +50,9 @@ export default function MenuAppBar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            PetMatch 🐶
-          </Typography>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, '&:hover': {color: "lightgray", cursor: "default"} }} onClick={goToHome}>
+              PetMatch 🐶
+            </Typography>
           {user && (
             <div>
               <IconButton
