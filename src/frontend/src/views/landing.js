@@ -1,6 +1,7 @@
 import React from 'react';
 import LoginButton from 'utils/login';
 import LogoutButton from 'utils/logout';
+import PetImage from 'utils/petImage';
 import Page from '../components/page';
 
 export async function loader() {
@@ -9,12 +10,23 @@ export async function loader() {
   }
   
 function Landing() {
+    // Welcome to Petmatch!
+
+    // Slogan
+
+    // Cute cat photo
+
+    // Login/signup
     return (
         <Page title='PetMatch'>
             <h1>Hello!</h1>
+            
             <LoginButton/>
             <LogoutButton/>
+
+            <PetImage image_url='https://images.unsplash.com/photo-1529778873920-4da4926a72c2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1336&q=80'/>
         </Page>
+
     )
 }
 

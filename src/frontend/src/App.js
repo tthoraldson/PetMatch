@@ -10,6 +10,7 @@ import {
 import { useAuth0 } from '@auth0/auth0-react';
 import Matches from 'views/matches';
 import Preferences from 'views/preferences';
+import Home from 'views/home';
 
 
 
@@ -32,6 +33,11 @@ const App = () => {
           element: <About />,
           errorElement: <ErrorPage />,
           //loader: postLoader,
+        },
+        {
+            path: 'home',
+            element: <Home />,
+            errorElement: <ErrorPage />,
         },
         {
             path: 'matches',

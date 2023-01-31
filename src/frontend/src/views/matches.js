@@ -3,7 +3,7 @@ import Loading from 'components/loading';
 import React from 'react';
 import Page from '../components/page';
 
-export async function loader() {
+export async function Matchloader() {
     // TODO: Add api call here~
     return 'Hello World';
   }

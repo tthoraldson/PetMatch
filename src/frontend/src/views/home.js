@@ -1,5 +1,7 @@
+import { withAuthenticationRequired } from '@auth0/auth0-react';
+import Loading from 'components/loading';
 import React from 'react';
-import { useLoaderData } from 'react-router-dom';
+// import { useLoaderData } from 'react-router-dom';
 import Page from '../components/page';
 
 export async function loader() {
@@ -7,12 +9,14 @@ export async function loader() {
   return 'Hello World';
 }
 
-function Home() {
+export const Home = () => {
   return (
-      <Page>
+      <Page title='Home | PetMatch'>
           <h1>PetMatch is NEAT!</h1>
       </Page>
   )
 }
 
-export default Home;
+export default withAuthenticationRequired(Home, {
+  onRedirecting: () => <Loading />,
+});
