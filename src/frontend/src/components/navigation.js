@@ -6,19 +6,16 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useNavigate } from "react-router-dom";
 
 export default function MenuAppBar() {
-  const [auth, setAuth] = React.useState(true);
+  const { user } = useAuth0();
+  const navigate = useNavigate();
+  const { logout } = useAuth0();
   const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleChange = (event) => {
-    setAuth(event.target.checked);
-  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -28,20 +25,16 @@ export default function MenuAppBar() {
     setAnchorEl(null);
   };
 
+  const goToPreferences = () => {
+    navigate('/preferences');
+  }
+
+  const logoutButton = () => {
+    logout({ logoutParams: { returnTo: window.location.origin } });
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={auth}
-              onChange={handleChange}
-              aria-label="login switch"
-            />
-          }
-          label={auth ? 'Logout' : 'Login'}
-        />
-      </FormGroup>
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -54,9 +47,9 @@ export default function MenuAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Photos
+            PetMatch 🐶
           </Typography>
-          {auth && (
+          {user && (
             <div>
               <IconButton
                 size="large"
@@ -83,8 +76,14 @@ export default function MenuAppBar() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
+                <MenuItem onClick={() => {
+                  goToPreferences();
+                  handleClose();
+                }}>Profile</MenuItem>
+                <MenuItem onClick={() => {
+                  handleClose();
+                  logoutButton();
+                  }}>Logout</MenuItem>
               </Menu>
             </div>
           )}
