@@ -11,6 +11,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import Matches from 'views/matches';
 import Preferences from 'views/preferences';
 import Home from 'views/home';
+import HealthService from 'services/health.service';
 
 
 
@@ -51,6 +52,7 @@ const App = () => {
         }
       ]);
       
+      HealthService();
       return (
         <StrictMode>
           <RouterProvider router={router} />
