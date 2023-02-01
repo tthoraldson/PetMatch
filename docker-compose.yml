@@ -55,6 +55,24 @@ services:
     networks:
     - pet_match_network
 
+  # petmatch model backend
+  model-backend:
+    build:
+      context: ./src/pet_match_stack/api/model-api
+      dockerfile: petmatch-model-backend.Dockerfile
+    # create shell
+    tty: true
+    # mount local user data file to fastapi models container
+    volumes:
+      - "./src/pet_match_stack/api/model-api:/src/app"
+    ports: 
+      - "8087:8087"
+    # links to dynamo
+    links:
+      - dynamo
+    networks:
+    - pet_match_network
+
   # streamlit
   streamlit:
     build:
