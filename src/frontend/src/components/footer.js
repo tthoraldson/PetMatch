@@ -10,15 +10,16 @@ export default function Footer() {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '100vh',
         }}>
         <CssBaseline />
         <Box
           component="footer"
           sx={{
-            py: 3,
-            px: 2,
-            mt: 'auto',
+            position: "fixed", 
+            width: "100%",
+            minHeight: "5vh",
+            mt: "1vh",
+            bottom: 0,
             backgroundColor: (theme) =>
               theme.palette.mode === 'light'
                 ? theme.palette.grey[200]
@@ -26,9 +27,11 @@ export default function Footer() {
           }}
         >
           <Container maxWidth="sm">
+            <center>
             <Typography variant="body1">
-              My sticky footer can be found here.
+              Made with ❤️ by the Petmatch Team @ FourthBrain
             </Typography>
+            </center>
           </Container>
         </Box>
       </Box>

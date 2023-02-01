@@ -10,13 +10,59 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { Drawer, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import LoyaltyIcon from '@mui/icons-material/Loyalty';
+import HomeIcon from '@mui/icons-material/Home';
+import InfoIcon from '@mui/icons-material/Info';
+import InsertCommentIcon from '@mui/icons-material/InsertComment';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 
 export default function MenuAppBar() {
   const { user } = useAuth0();
   const navigate = useNavigate();
   const { logout } = useAuth0();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [open, setOpen] = useState(false);
 
+  const publicRoutes = [
+    {
+      name: "Home",
+      icon: <HomeIcon />,
+    },
+    {
+      name: "About",
+      icon: <InfoIcon />,
+    },
+    {
+      name: "Feeback",
+      icon: <InsertCommentIcon />,
+    },
+    ];
+
+    const protectedRoutes = [
+      {
+        name: "Home",
+        icon: <HomeIcon />,
+      },
+      {
+        name: "Matches",
+        icon: <LoyaltyIcon />,
+      },
+      {
+        name: "Preferences",
+        icon: <SettingsSuggestIcon />,
+      },
+      {
+        name: "About",
+        icon: <InfoIcon />,
+      },
+      {
+        name: "Feeback",
+        icon: <InsertCommentIcon />,
+      },
+    ]
+    
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -33,6 +79,20 @@ export default function MenuAppBar() {
     navigate('/home');
   }
 
+  const getList = () => {
+    const data = user ? protectedRoutes : publicRoutes;
+    
+    return (
+    <div style={{ width: 250 }} onClick={() => setOpen(false)}>
+    {data.map((item, index) => (
+        <ListItem button key={index}>
+        <ListItemIcon>{item.icon}</ListItemIcon>
+        <ListItemText primary={item.name} />
+        </ListItem>
+    ))}
+    </div>
+)};
+
   const logoutButton = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
   }
@@ -47,9 +107,13 @@ export default function MenuAppBar() {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
+            onClick={() => setOpen(true)}
           >
             <MenuIcon />
           </IconButton>
+          <Drawer open={open} anchor={"left"} onClose={() => setOpen(false)}>
+            {getList()}
+          </Drawer>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, '&:hover': {color: "lightgray", cursor: "default"} }} onClick={goToHome}>
               PetMatch 🐶
             </Typography>
