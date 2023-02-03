@@ -13,9 +13,10 @@ export async function loader() {
          console.log(err.message);
       });
   }
-  
+
 function About() {
     loader();
+
     return (
         <Page title='About | Petmatch'>
             <h1>About</h1>
