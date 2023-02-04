@@ -22,3 +22,6 @@ RUN yum install -y which tree nano iputils net-tools jq curl
 
 # run shell script to create database
 ENTRYPOINT ["sh","/setup.sh"]
+
+# run python script to initially load database
+RUN python ./loadData.py
