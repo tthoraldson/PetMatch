@@ -1,17 +1,17 @@
 {
-    "TableName": "UserPreferences",
-    "AttributeDefinitions": [
-      { "AttributeName": "user_id", "AttributeType": "S" },
-      { "AttributeName": "timestamp", "AttributeType": "S" }
-    ],
-    "KeySchema": [
-      { "AttributeName": "user_id", "KeyType": "HASH" },
-      { "AttributeName": "timestamp", "KeyType": "RANGE" }
-    ],
-    "BillingMode": "PAY_PER_REQUEST",
-    "ProvisionedThroughput": {
-      "ReadCapacityUnits": 5,
-      "WriteCapacityUnits": 5
-    }
+  "TableName": "UserPreferences",
+  "AttributeDefinitions": [
+    { "AttributeName": "user_id", "AttributeType": "S" },
+    { "AttributeName": "timestamp", "AttributeType": "S" }
+  ],
+  "KeySchema": [
+    { "AttributeName": "user_id", "KeyType": "HASH" },
+    { "AttributeName": "timestamp", "KeyType": "RANGE" }
+  ],
+  "BillingMode": "PAY_PER_REQUEST",
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
   }
+}
   

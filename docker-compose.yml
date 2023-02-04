@@ -143,6 +143,23 @@ services:
         # allow writing to the volume
         read_only: false
 
+  frontend:
+    image: node:16-alpine 
+    container_name: frontend
+    build:
+      context: ./src/frontend
+      dockerfile: frontend.Dockerfile
+    # create shell
+    tty: true
+    ports:
+      - "3000:3000"
+    # mount local user data file to dynamo container
+    volumes:
+      - "./src/frontend:/app/frontend/"
+    working_dir: /app/frontend
+    networks: 
+    - pet_match_network
+
 volumes:
   pet-data:
   user-rankings:
