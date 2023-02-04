@@ -6,6 +6,7 @@ tables=(
     "users-table-definition.json"
     "rankings-table-definition.json"
     "user-feedback-table-definition.json"
+    "cats-adoptable-table-definition.json"
 )
 
 for table in "${tables[@]}"; do
