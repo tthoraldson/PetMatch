@@ -5,6 +5,6 @@ setup(
     packages=find_packages(),
     version='0.1.0',
     description='Finally, a tinder clone for finding your perfect pet!',
-    author='Theresa Thoraldson, Denise Bladly, and Matthew Robinson',
+    author='Theresa Thoraldson, Denise Blady, and Matthew Robinson',
     license='',
 )
