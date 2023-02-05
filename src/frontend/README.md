@@ -21,6 +21,10 @@
     - UserId
     - Animal Preference
       - Cat/Dog
+    - Option
+      - collaborative filtering
+      - content based
+      - we need to know whether we're calling for a new collaborative or content based pet for dogs especially and future for cats as well
   - Response
     - New pet
       - pet id
