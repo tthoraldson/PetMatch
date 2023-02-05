@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 
+// TODO: Make it so the footer isn't fixed
 export default function Footer() {
     return (
       <Box
