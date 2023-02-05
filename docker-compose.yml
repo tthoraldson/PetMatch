@@ -146,6 +146,7 @@ services:
   frontend:
     image: node:16-alpine 
     container_name: frontend
+    env_file: ./src/frontend/.env
     build:
       context: ./src/frontend
       dockerfile: frontend.Dockerfile
