@@ -67,6 +67,23 @@ def verify_dynamo():
 
     return json.dumps(response)
 
+@app.get("/describe-dynamo")
+def describe_dynamo():
+
+
+    # insert the data into the table
+    response = dynamo.describe_table(
+        TableName='Cats-Adoptable'
+    )
+    # check the status code of the response
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        print("Data inserted successfully!")
+    else:
+        print("Failed to insert data. Error: ", response)
+
+    print(response)
+    return 'done'
+
 class Ranking(BaseModel):
     user_id : str
     pet_id : str
@@ -191,36 +208,53 @@ def petmatch_put_feedback(feedback: UserFeedback):
 
 # TODO fix params
 @app.post("/get_url")
-async def get_url(animal_id ,animals_df ):
+async def get_url(animal_id,animal_type='cat',animals_df=None):
     """
     Parameters: 
             animal_id  = animal id
             animals_df = dataframe of all animals of chosen type (dog, cat) 
+            animal_type = specify cat or dog
     Output: 
             petfinder url of given animal_id
     """
     
     ds = animals_df
     colsGrab = ['url']
+    if(animal_type=='cat'):
+        response =dynamo.get_item(TableName="Cats-Adoptable",
+                                  Key={'pet_id':{'S',animal_id},'pet_id':{'S',animal_id}}
+                                  )
+    #return ds.loc[ds['pet_id'] == animal_id][colsGrab].values[0]   
+    return response[colsGrab].values[0] 
 
-    return ds.loc[ds['id'] == animal_id][colsGrab].values[0]    
 
-
-
-# TODO fix params
+# TODO fix params, replaced ds with get_item call
 @app.post("/get_picture")
-async def get_picture(animal_id,animals_df):  
+async def get_picture(animal_id,animal_type='cat',animals_df=None):  
     """
     Parameters: 
             animal_id  = animal id
-            animals_df = dataframe of all animals of chosen type (dog, cat) 
+            animals_df = dataframe of all animals of chosen type (dog, cat)
+            animal_type = specify cat or dog 
     Output: 
             petfinder url of given animal_id
     """
     ds = animals_df
-    colsGrab = ['primary_photo_cropped.full']
-    return ds.loc[ds['id'] == animal_id][colsGrab].values[0]
+    colsGrab = 'primary_photo_cropped.full'
 
+    if(animal_type=='cat'):
+        response =dynamo.get_item(TableName="Cats-Adoptable",
+                                  Key={
+                                    'pet_id':{'S':animal_id},
+                                    'animal_id':{'S':animal_id}
+                                    }
+                                  )
+    #return ds.loc[ds['pet_id'] == animal_id][colsGrab].values[0]
+    # load the database response as a python dict obj
+    found_cat_pic = json.loads(response['Item']['record']['S'])
+
+    # dump as JSON to the API
+    return json.dumps(found_cat_pic[colsGrab])
 
 
 # TODO fix params
@@ -246,20 +280,27 @@ async def predict_collab(pet_rankings,user_name,top_x,animal_model):
 
 
 
-def get_item_id(animal_id,animals_df):  
+def get_item_id(animal_id,animal_type='cat',animals_df=None):  
     """
     required by predict_content
     This method is required to translate from content-based model id for that animal and the petfinder data for that animal. 
     This ensures the correct petfinder data for the animal is retrieved and is a safety measure
     Parameters: 
             animal_id  = animal id
-            animals_df = dataframe of all animals of chosen type (dog, cat) 
+            animals_df = dataframe of all animals of chosen type (dog, cat)
+            animal_type = specify cat or dog  
     Output: 
             petfinder id of animal from content-based recommender
     """
     ds = animals_df
-    colsGrab = ['id']
-    return ds.loc[ds['id'] == animal_id][colsGrab].values[0]
+    colsGrab = ['pet_id']
+    if(animal_type=='cat'):
+        response =dynamo.get_item(TableName="Cats-Adoptable",
+                                  Key={'pet_id':{'S',animal_id},'pet_id':{'S',animal_id}}
+                                  )
+    #return ds.loc[ds['id'] == animal_id][colsGrab].values[0]
+    return response[colsGrab].values[0]
+
 
 @app.post("/predict_content")
 async def predict_content(animal_id,animals_df,top_x,animal_model):

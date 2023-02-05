@@ -96,3 +96,5 @@ target/
 # petpy api key
 secrets_petfinder.py
 /dvc-local-remote
+
+src/frontend/node_modules
