@@ -24,7 +24,7 @@ dynamo = boto3.client(
     )
 
 # File paths for data
-cats_path = '/app/data/version0_5/Adoptable_cats_20221125.csv'
+cats_path = 'app/data/version0_5/Adoptable_cats_20221125.csv'
 
 # Create JSON -> Dics and List of Dics (json required for backend processing by dynamo)
 catsAdoptable_json= json.loads(
@@ -34,15 +34,22 @@ catsAdoptable_json= json.loads(
 # TODO Add dogs once cats works
 
 # Create a list of dictionaries and their table name
-lst_Dics = [[{'item':catsAdoptable_json,'table':'Cats-Adoptable'}]]
+lst_Dics = [{'item':catsAdoptable_json,'table':'Cats-Adoptable'}]
 
 #Connect to DynamoDb Function
-def insertDynamoItem(tablename,item_lst):
-    dynamoTable = dynamo.Table(tablename)
+def insertDynamoItem(table_name,item_lst):
+    
     for record in item_lst:
-        dynamoTable.put_item(Item=record)
+        dynamo.put_item(
+            TableName=f'{table_name}',
+            Item={
+                'pet_id': {'S': str(record['id'])} ,
+                'animal_id': {'S': str(record['id'])}, 
+                'record': {'S':json.dumps(record)}
+                }
+            )
 
-    print('Success-Initial DB population',tablename,sep=" ")
+    print('Success-Initial DB population',table_name,sep=" ")
 
 # Upload Content to DynamoDB
 for element in lst_Dics:

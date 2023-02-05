@@ -36,6 +36,21 @@ services:
       - dynamo
     networks: 
     - pet_match_network
+    # mount data to db setup container
+    volumes:
+      - type: volume
+        # use the named volume as the source
+        source: pet-data
+        # i.e. your local_dir_absolute path will be mounted to target of next section (bind)
+        target: $BASE_PATH/data/raw
+        volume:
+          nocopy: true
+      - type: bind
+        # use the named volume's target as the source
+        source: $BASE_PATH/data/raw
+        target: /app/data
+        # do not allow app interface to write to pet-data volume
+        read_only: true
 
   # fastapi backend
   fastapi:

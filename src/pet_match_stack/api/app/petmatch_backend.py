@@ -66,6 +66,23 @@ def verify_dynamo():
 
     return json.dumps(response)
 
+@app.get("/describe-dynamo")
+def describe_dynamo():
+
+
+    # insert the data into the table
+    response = dynamo.describe_table(
+        TableName='Cats-Adoptable'
+    )
+    # check the status code of the response
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        print("Data inserted successfully!")
+    else:
+        print("Failed to insert data. Error: ", response)
+
+    print(response)
+    return 'done'
+
 class Ranking(BaseModel):
     user_id : str
     pet_id : str
@@ -222,13 +239,21 @@ async def get_picture(animal_id,animal_type='cat',animals_df=None):
             petfinder url of given animal_id
     """
     ds = animals_df
-    colsGrab = ['primary_photo_cropped_full']
+    colsGrab = 'primary_photo_cropped.full'
+
     if(animal_type=='cat'):
         response =dynamo.get_item(TableName="Cats-Adoptable",
-                                  Key={'pet_id':{'S',animal_id},'pet_id':{'S',animal_id}}
+                                  Key={
+                                    'pet_id':{'S':animal_id},
+                                    'animal_id':{'S':animal_id}
+                                    }
                                   )
     #return ds.loc[ds['pet_id'] == animal_id][colsGrab].values[0]
-    return response[colsGrab].values[0]
+    # load the database response as a python dict obj
+    found_cat_pic = json.loads(response['Item']['record']['S'])
+
+    # dump as JSON to the API
+    return json.dumps(found_cat_pic[colsGrab])
 
 
 # TODO fix params

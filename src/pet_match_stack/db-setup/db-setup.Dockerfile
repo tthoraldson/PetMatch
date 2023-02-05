@@ -1,5 +1,6 @@
 # interfaces with local dynamo db with aws cli, creates its a database during build
-FROM amazon/aws-cli:2.9.4
+FROM amazon/aws-cli:2.9.4 as base
+# grab linux 2, run other script
 
 # expose port 8002
 EXPOSE 8002:8002
@@ -11,17 +12,32 @@ RUN aws configure set aws_access_key_id dummyid && \
     aws configure set aws_secret_access_key dummykey && \
     aws configure set default.region us-west-2 
 
-# move database setup script into place
-COPY ./setup.sh /setup.sh
+# move database setup script and others into root
+COPY . /
 
-# move json schemas into place
-COPY ./schemas /schemas
 
-# install tools to edit text, debug, network, curl, etc
-RUN yum install -y which tree nano iputils net-tools jq curl
+# use aws linux 2 as next build stage
+FROM amazonlinux:2
 
-# run shell script to create database
+RUN yum install -y python3 which tree nano iputils net-tools jq curl python-pip
+
+# install boto3
+RUN pip3 install boto3 pandas
+
+# create an app folder to hold data
+RUN mkdir -p /app/
+
+# move python script into place
+COPY ./loadData.py /
+
+# run python script
+# RUN python3 ./loadData.py
+
+# retain all the stuff from base
+COPY --from=base / ./
+
+# run shell script to create database and 
 ENTRYPOINT ["sh","/setup.sh"]
 
-# run python script to initially load database
-RUN python ./loadData.py
+# keep alive for debugging
+# ENTRYPOINT ["tail", "-f", "/dev/null"]
