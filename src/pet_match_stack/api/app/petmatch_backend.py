@@ -9,6 +9,7 @@ import json
 import uuid
 from typing import Union, Optional
 import datetime
+from typing import List, Dict
 
 # configure boto3
 my_config = Config(
@@ -206,7 +207,106 @@ def petmatch_put_feedback(feedback: UserFeedback):
     return json.dumps(response)
 
 
-# TODO fix params
+@app.post("/get_new_recommendation")
+async def get_new_recommendation(animal_ids: list[int] , animal_type:str, option:str):
+    """
+        
+    Parameters: 
+            animal_ids  = a list of up to 10 animal ids
+            animal_type = specify cat or dog
+            option: Enum (Collaborative filtering or content based filtering)
+    Output: 
+            new pet
+                - pet id
+                - image url (largest image)
+                - pet description
+                - pet attributes (if true)
+            JSON
+    """
+    new_pet = {}
+    # TODO remove hard
+    table_name = "Cats-Adoptable"
+    full_photo_attr = 'primary_photo_cropped.full'
+    option = 'collab'
+    # unmock
+    # This mocks a request to predict_collab for 10 pets by method of collaborative filtering
+    ten_pets = [ 58765130, 58957223, 58704541, 58725463, 58910057, 58710916, 58858666, 58688022, 58912182, 58964429]
+
+    # build the keys
+    keys : List[Dict] = [
+            { 'pet_id': {'S': str(pet_id)}, 'animal_id': {'S': str(pet_id)} } for pet_id in ten_pets
+        ]
+
+    # TODO, remove this if we know the table name or animal type
+    if animal_type=='cat':
+        
+        response=dynamo.batch_get_item(
+            RequestItems={
+                table_name: {
+                    'Keys': keys
+                }
+            }
+        )
+
+    # elif animal_type == 'dog' and option == 'collab':
+    #     response =dynamo.batch_get_item(
+    #         TableName=table_name,
+    #         Key={
+    #         'pet_id':{'S':animal_id},
+    #         'animal_id':{'S':animal_id}
+    #         }
+    #     )
+
+    # elif animal_type == 'dog' and option == 'content':
+    #     response =dynamo.batch_get_item(
+    #         TableName=table_name,
+    #         Key={
+    #         'pet_id':{'S':animal_id},
+    #         'animal_id':{'S':animal_id}
+    #         }
+    #     )
+    
+    # load the database response as a python dict obj
+    collab_animals : List = response['Responses'][table_name]
+    
+    for indx,_record in enumerate(collab_animals):
+        
+        collab_animals[indx].update(
+            {'record': json.loads(collab_animals[indx]['record']['S'])}
+        )
+    
+    animal_specs = [
+        {
+            'pet_id': animal['animal_id']['S'],
+            'pet_description': animal['record']['description'],
+            'full_photo': animal['record']['primary_photo_cropped.full'],
+            'attrs': {
+                'status': animal['record']['status'],
+                'status_changed_at': animal['record']['status_changed_at'],
+                'published_at': animal['record']['published_at'],
+                'distance': animal['record']['distance'],
+                'breeds.primary': animal['record']['breeds.primary'],
+                'breeds.secondary': animal['record']['breeds.secondary'],
+                'breeds.mixed': animal['record']['breeds.mixed'],
+                'breeds.unknown': animal['record']['breeds.unknown'],
+                'colors.primary': animal['record']['colors.primary'],
+                'colors.secondary': animal['record']['colors.secondary'],
+                'colors.tertiary': animal['record']['colors.tertiary'],
+                'attributes.spayed_neutered': animal['record']['attributes.spayed_neutered'],
+                'attributes.house_trained': animal['record']['attributes.house_trained'],
+                'attributes.declawed': animal['record']['attributes.declawed'],
+                'attributes.special_needs': animal['record']['attributes.special_needs'],
+                'attributes.shots_current': animal['record']['attributes.shots_current'],
+                'environment.children': animal['record']['environment.children'],
+                'environment.dogs': animal['record']['environment.dogs'],
+                'environment.cats': animal['record']['environment.cats'],
+            }
+        } for animal in collab_animals
+    ]
+
+    # dump as JSON to the API
+    return json.dumps(collab_animals)
+
 @app.post("/get_url")
 async def get_url(animal_id,animal_type='cat',animals_df=None):
     """
@@ -228,7 +328,6 @@ async def get_url(animal_id,animal_type='cat',animals_df=None):
     return response[colsGrab].values[0] 
 
 
-# TODO fix params, replaced ds with get_item call
 @app.post("/get_picture")
 async def get_picture(animal_id,animal_type='cat',animals_df=None):  
     """
@@ -257,9 +356,8 @@ async def get_picture(animal_id,animal_type='cat',animals_df=None):
     return json.dumps(found_cat_pic[colsGrab])
 
 
-# TODO fix params
-@app.post("/predict_collab")
-async def predict_collab(pet_rankings,user_name,top_x,animal_model):
+
+def predict_collab(pet_rankings,user_name,top_x,animal_model):
     """
     Parameters: 
             pet_rankings = dataframe of all pet rankings of the chosen animal type
