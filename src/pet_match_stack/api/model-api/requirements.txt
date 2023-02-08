@@ -1,4 +1,4 @@
-# scikit-surprise==1.1.1
+scikit-surprise==1.1.1
 pandas==1.5.3
 joblib==1.2.0
 fastapi==0.89.1
@@ -6,3 +6,20 @@ pydantic==1.10.4
 uvicorn==0.20.0
 requests==2.28.2
 boto3==1.26.55
+numpy==1.24.2
+
+
+    #  Running `gfortran --version` gave "[Errno 2] No such file or directory: 'gfortran'"
+    #   Running `gfortran -V` gave "[Errno 2] No such file or directory: 'gfortran'"
+    #   Running `flang --version` gave "[Errno 2] No such file or directory: 'flang'"
+    #   Running `flang -V` gave "[Errno 2] No such file or directory: 'flang'"
+    #   Running `nvfortran --version` gave "[Errno 2] No such file or directory: 'nvfortran'"
+    #   Running `nvfortran -V` gave "[Errno 2] No such file or directory: 'nvfortran'"
+    #   Running `pgfortran --version` gave "[Errno 2] No such file or directory: 'pgfortran'"
+    #   Running `pgfortran -V` gave "[Errno 2] No such file or directory: 'pgfortran'"
+    #   Running `ifort --version` gave "[Errno 2] No such file or directory: 'ifort'"
+    #   Running `ifort -V` gave "[Errno 2] No such file or directory: 'ifort'"
+    #   Running `ifx --version` gave "[Errno 2] No such file or directory: 'ifx'"
+    #   Running `ifx -V` gave "[Errno 2] No such file or directory: 'ifx'"
+    #   Running `g95 --version` gave "[Errno 2] No such file or directory: 'g95'"
+    #   Running `g95 -V` gave "[Errno 2] No such file or directory: 'g95'"

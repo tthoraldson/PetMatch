@@ -245,7 +245,7 @@ async def get_new_recommendation(animal_ids: list[int] , animal_type:str, option
                 table_name: {
                     'Keys': keys
                 }
-            }
+            }   
         )
 
     # elif animal_type == 'dog' and option == 'collab':
