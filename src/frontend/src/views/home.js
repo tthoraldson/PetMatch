@@ -28,13 +28,7 @@ export async function savePreference(){
 export const Home = () => {
   return (
       <Page title='Home | PetMatch'>
-          <Box
-          sx={{
-            width: 500,
-            height: 500,
-          }}>
-            <PetImage image_url='https://images.unsplash.com/photo-1529778873920-4da4926a72c2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1336&q=80'/>
-          </Box>
+          <PetImage image_url='https://images.unsplash.com/photo-1529778873920-4da4926a72c2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1336&q=80'/>
       </Page>
   )
 }
