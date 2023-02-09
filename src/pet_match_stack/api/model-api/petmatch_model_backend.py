@@ -8,9 +8,9 @@ import boto3
 from botocore.config import Config
 import json
 import uuid
-# from surprise import Dataset, accuracy, SVDpp # if only non-model training probably only needs SVDpp
-# from surprise.model_selection import cross_validate
-# from surprise import Reader
+from surprise import Dataset, accuracy, SVDpp # if only non-model training probably only needs SVDpp
+from surprise.model_selection import cross_validate
+from surprise import Reader
 
 # configure boto3
 my_config = Config(
@@ -40,36 +40,36 @@ app.add_middleware(
 )
 
 
-# @app.post("/retrain_collaborativeFiltering")
-# async def retrain_collaborativeFiltering(trainingset_full):
-#     """ 
-#     Retrain Collaborative Filtering model
-#     Parameters: 
-#                 trainingset_full  = fully set up training data to fit
-#     Output: 
-#                 newly trained model
-#     """
+@app.post("/retrain_collaborativeFiltering")
+async def retrain_collaborativeFiltering(trainingset_full):
+    """ 
+    Retrain Collaborative Filtering model
+    Parameters: 
+                trainingset_full  = fully set up training data to fit
+    Output: 
+                newly trained model
+    """
 
-#     algoChosen= SVDpp(n_epochs=15,lr_all=0.01) #chosen algo
-#     algoChosen.fit(trainingset_full)
-#     #<TODO> save to model store in AWS
-#     return algoChosen
+    algoChosen= SVDpp(n_epochs=15,lr_all=0.01) #chosen algo
+    algoChosen.fit(trainingset_full)
+    #<TODO> save to model store in AWS
+    return algoChosen
 
-# @app.post("/cross_validate_collaborativeFiltering")
-# async def cross_validate_collaborativeFiltering(training_data,numFolds=10):
-#     """    
-#     Check performance of Collaborative Filtering model
-#     Parameters: 
-#             training_data  = training data to use
-#             numFolds       = number of cross validation folds to use
-#     Output: 
-#             printed performance metrics for now...
-#     """
+@app.post("/cross_validate_collaborativeFiltering")
+async def cross_validate_collaborativeFiltering(training_data,numFolds=10):
+    """    
+    Check performance of Collaborative Filtering model
+    Parameters: 
+            training_data  = training data to use
+            numFolds       = number of cross validation folds to use
+    Output: 
+            printed performance metrics for now...
+    """
 
-#     algoChosen= SVDpp(n_epochs=15,lr_all=0.01) #chosen algo
-#     print(cross_validate(algoChosen, training_data, measures=['RMSE', 'MAE'], cv=numFolds, verbose=True))
+    algoChosen= SVDpp(n_epochs=15,lr_all=0.01) #chosen algo
+    print(cross_validate(algoChosen, training_data, measures=['RMSE', 'MAE'], cv=numFolds, verbose=True))
 
-#     return
+    return
 
 
 
