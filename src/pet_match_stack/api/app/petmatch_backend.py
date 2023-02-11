@@ -11,6 +11,7 @@ from typing import Union, Optional
 import datetime
 from typing import List, Dict
 from enum import Enum
+import math
 
 # configure boto3
 my_config = Config(
@@ -227,6 +228,18 @@ def petmatch_put_feedback(feedback: UserFeedback):
 
     return json.dumps(response)
 
+def cleanNullTerms(d):
+    clean = {}
+    for k,v in d.items():
+        if isinstance(v,dict):
+            nested = cleanNullTerms(v)
+            if len(nested.keys()) > 0:
+                clean[k] = nested
+        elif (v is not None) and (bool(v)): #filter out NAs and falses
+            clean[k]= v 
+
+    return clean
+
 
 @app.get("/get_new_recommendation/{user_id}/{animal_type}")
 async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTypeEnum, option: OptionEnum):
@@ -335,9 +348,15 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
                 'environment.children':  animal['record']['environment.children'],
                 'environment.dogs':  animal['record']['environment.dogs'],
                 'environment.cats':  animal['record']['environment.cats'],
+                'contact.email': animal['record']['contact.email']
             }
         } for animal in collab_animals
     ]
+    #clean null terms from dictionary
+    for x in range(len(animal_specs)):
+        to_clean = animal_specs[x]
+        clean_animal_spec = cleanNullTerms(to_clean)
+        animal_specs[x] = clean_animal_spec
 
     # dump as JSON to the API
     return json.dumps(animal_specs)
