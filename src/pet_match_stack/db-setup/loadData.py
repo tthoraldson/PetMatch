@@ -27,6 +27,7 @@ dynamo = boto3.client(
 cats_path = 'app/data/version0_5/Adoptable_cats_20221125.csv'
 dogs_master_path = 'app/data/version0_5/Adoptable_dogs_20221202_withExtras.csv'
 dogs_contentbased_path = 'app/data/version0_5/dogsAdoptablewithExtrasv2.csv'
+rankings_path = 'app/data/rankings/petmatch_rankings.csv'
 
 # Create JSON -> Dics and List of Dics (json required for backend processing by dynamo)
 catsAdoptable_json= json.loads(
@@ -41,11 +42,16 @@ dogsAdoptable_contentbased_json= json.loads(
     pd.read_csv(dogs_contentbased_path,low_memory=False).dropna(subset=['primary_photo_cropped.full'])
     .to_json(orient='records')
 )
+rankings_json= json.loads(
+    pd.read_csv(rankings_path,low_memory=False)
+    .to_json(orient='records')
+)
 
 # Create a list of dictionaries and their table name
-lst_Dics = [{'item':catsAdoptable_json,'table':'Cats-Adoptable'},
-            {'item':dogsAdoptable_master_json,'table':'Dogs-Adoptable-master'},
-            {'item':dogsAdoptable_contentbased_json,'table':'Dogs-Adoptable-contentbased'}]
+lst_Dics = [{'item':rankings_json,'table':'Rankings'}]#,
+            #{'item':catsAdoptable_json,'table':'Cats-Adoptable'},
+            #{'item':dogsAdoptable_master_json,'table':'Dogs-Adoptable-master'},
+            #{'item':dogsAdoptable_contentbased_json,'table':'Dogs-Adoptable-contentbased'}]
 
 #Connect to DynamoDb Function
 def insertDynamoItem(table_name,item_lst):
