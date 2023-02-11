@@ -265,7 +265,13 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
     user_id = user_id
     # unmock
     # This mocks a request to predict_collab for 10 pets by method of collaborative filtering
-    ten_pets = [ 58765130, 58957223, 58704541, 58725463, 58910057, 58710916, 58858666, 58688022, 58912182, 58964429]
+    #ten_pets = [ 58765130, 58957223, 58704541, 58725463, 58910057, 58710916, 58858666, 58688022, 58912182, 58964429]
+
+    # Get recommendation 
+    if option =='collab':
+        ten_pets = predict_collab(user_id,10,animal_type)
+    elif option =='content':
+        print('predict_content todo')
 
     # build the keys
     keys : List[Dict] = [
@@ -411,13 +417,12 @@ async def get_picture(animal_id,animal_type='cat',animals_df=None):
 
 
 
-def predict_collab(pet_rankings,user_name,top_x,animal_model):
+def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum,):
     """
     Parameters: 
-            pet_rankings = dataframe of all pet rankings of the chosen animal type
             user_name    = string of user name
             top_x        = integer of how many recommendations to return
-            animal_model = pre-trained model to make recommendations with
+            animal_type = specify cat or dog
     Output: 
             top X recommendations in list form"""
 
