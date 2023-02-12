@@ -14,6 +14,9 @@ EXPOSE 8086
 
 # copy application code
 COPY ./app /src/app
+
+# create models dir
+RUN mkdir -p /src/app/models/
  
 # run on port 80
 CMD ["uvicorn", "app.petmatch_backend:app", "--host", "0.0.0.0", "--port", "8086", "--reload"]
