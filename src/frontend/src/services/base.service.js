@@ -1,7 +1,1 @@
-// a base react data service
-
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8080/api/';
-
-
+export const BASE_API = process.env.NODE_ENV === 'development' ? 'http://localhost:8086/' : process.env.API_URL;

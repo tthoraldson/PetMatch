@@ -1,7 +1,7 @@
-const HealthService = () => {
-        // TODO: Need to get prod API base URL
-        const baseApi = process.env.NODE_ENV === 'development' ? 'http://localhost:8086/' : '';
-        return fetch(baseApi)
+import { BASE_API } from './base.service';
+
+const HealthService = () => { 
+        return fetch(BASE_API)
             .then((response) => {
                 if (response.ok) {
                     return response.json();
