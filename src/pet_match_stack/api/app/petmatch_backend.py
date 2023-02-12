@@ -13,6 +13,7 @@ import datetime
 from typing import List, Dict
 from enum import Enum
 import math
+import joblib
 
 # configure boto3
 my_config = Config(
@@ -48,6 +49,16 @@ dynamo = boto3.client(
         aws_access_key_id='DUMMYIDEXAMPLE',
         aws_secret_access_key='DUMMYEXAMPLEKEY'
     )
+
+
+# open model file(s)
+cats_v2_bin_path = '/src/app/models/collabfilter_model_cats_v2.pkl'
+dogs_v2_bin_path = '/src/app/models/collabfilter_model_dogs_v2.pkl'
+
+
+# load models
+collab_v2_dogs_model = joblib.load(dogs_v2_bin_path)
+collab_v2_cats_model = joblib.load(cats_v2_bin_path)
 
 
 class AnimalTypeEnum(str, Enum):
