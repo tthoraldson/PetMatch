@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import boto3
 from botocore.config import Config
+from boto3.dynamodb.conditions import Key
 import requests
 import json
 import uuid
@@ -265,13 +266,16 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
     user_id = user_id
     # unmock
     # This mocks a request to predict_collab for 10 pets by method of collaborative filtering
-    #ten_pets = [ 58765130, 58957223, 58704541, 58725463, 58910057, 58710916, 58858666, 58688022, 58912182, 58964429]
+    ten_pets = [ 58765130, 58957223, 58704541, 58725463, 58910057, 58710916, 58858666, 58688022, 58912182, 58964429]
 
     # Get recommendation 
     if option =='collab':
         ten_pets = predict_collab(user_id,10,animal_type)
+        #print("here")
     elif option =='content':
         print('predict_content todo')
+
+    return json.dumps(ten_pets)
 
     # build the keys
     keys : List[Dict] = [
@@ -365,7 +369,7 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
         animal_specs[x] = clean_animal_spec
 
     # dump as JSON to the API
-    return json.dumps(animal_specs)
+    #return json.dumps(animal_specs)
 
 @app.post("/get_url")
 async def get_url(animal_id,animal_type='cat',animals_df=None):
@@ -425,15 +429,31 @@ def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum,):
             animal_type = specify cat or dog
     Output: 
             top X recommendations in list form"""
+    # get pet rankings for user for the animal type
+    table_name = "Rankings"
+    rankings_response=dynamo.query(
+        TableName = table_name,
+        KeyConditionExpression="user_id = :id",
+        FilterExpression="contains(#animal_type,:animal_type)",
+        ExpressionAttributeValues={
+            ":id":{"S":user_name},
+            ":animal_type":{"S":animal_type},
+        },
+        ExpressionAttributeNames={
+            "#animal_type":"record",
+        },
+        #Select="user_id"        
+    )
 
-    all_1user_rankings = pet_rankings[pet_rankings['user_name'] == user_name]
-    rankings_minusKnownbyUser = pd.concat([pet_rankings,all_1user_rankings], axis=0, ignore_index=True).drop_duplicates(subset=["user_name","animal_id"],keep=False, ignore_index=True) # only remove user specific rankings from overall list, not everyone's!
-    eligible_animals = rankings_minusKnownbyUser[['animal_id']]
-    eligible_animals['Estimate_Score'] = eligible_animals['animal_id'].apply(lambda x: animal_model.predict(user_name, x).est)
-    eligible_animals = eligible_animals.sort_values('Estimate_Score', ascending=False)
+    output=rankings_response["Items"]
+    #all_1user_rankings = pet_rankings[pet_rankings['user_name'] == user_name]
+    #rankings_minusKnownbyUser = pd.concat([pet_rankings,all_1user_rankings], axis=0, ignore_index=True).drop_duplicates(subset=["user_name","animal_id"],keep=False, ignore_index=True) # only remove user specific rankings from overall list, not everyone's!
+    #eligible_animals = rankings_minusKnownbyUser[['animal_id']]
+    #eligible_animals['Estimate_Score'] = eligible_animals['animal_id'].apply(lambda x: animal_model.predict(user_name, x).est)
+    #eligible_animals = eligible_animals.sort_values('Estimate_Score', ascending=False)
     #print(eligible_animals.head(top_x)) # get top X reccs
-    reccs= eligible_animals.head(top_x)['animal_id'].tolist()
-    return reccs
+    #reccs= eligible_animals.head(top_x)['animal_id'].tolist()
+    return output
 
 
 
