@@ -15,7 +15,9 @@ Team
 
 Local Docker
 ------------
-- To run all required containers locally, run `BASE_PATH='<Path to this repo!>' docker compose up`
+- To run all required containers locally
+  - pull down `master` branch
+  - run `BASE_PATH='<Path to this repo!>' docker compose up`
   - For example: `BASE_PATH='/Users/theresa/Desktop/source/PetMatch' docker compose up`
 
 
@@ -23,7 +25,6 @@ Project Organization
 ------------
 
     ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
     │   ├── external       <- Data from third party sources.
@@ -51,29 +52,34 @@ Project Organization
     ├── src                <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
     │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
+    │   ├── data           
+    |   |   └── dynamo     <- Local shared Dynamodb
+    |   |   └── shared-local-instance.db <- Request this file from PetMatch team member
+    |   ├── frontend       <- React and AWS Amplify code, frontend Dockerfile
+    |   ├── pet_match_stack
+    |   |   └── api        <- 
+    |   |   |   └── app    <- FastAPI application code for main backend routes
+    |   |   |   └── model_api <- FastAPI application code for ML models interactions routes
+    |   |   |   └── fastapi.Dockerfile <- FastAPI application Dockerfile
+    |   |   |
+    |   |   └── db-setup <- DynamoDB local setup scripts and Dockerfile
+    |   |   └── infra    <- Terraform infrastructure
+    |   |   └── lambdas  <- AWS Lambda code 
+    |   |   └── tests    <- Testing sweet
+    |   | 
+    │   └── visualization  <- Contains scripts and Dockerfiles to run the Petmatch Streamlit application this contains basic version of Petmatch
+    |       └── pages <- Streamlit multi-page app pages
+    |       └── rankings <- Destination for saved user Rankings (likes of animals)
+    |       └── get_user_prefs.py <- script to collect user preferences
+    |       └── Petmatch_Start.py <- Streamlit application homepage 
     │
-    └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
+    └── docker-compose.yml   <- Docker Compose configuration that sets up and configures your local stack
 
 --------
 **Project Pitch Slides:** /reports/PetMatch_presentationSlides_20230123.pdf  
 **Project Software Architecture Diagram:** /reports/figures/PetMatch_SystemDiagram_20230123.png  
 
 **Still Need to Build:**  
-* Collaborative Filtering v2 Cats  
-* Collaborative Filtering v2 Dogs  
 * Incorporate best content-based filtering model for cats and dogs into MLE Stack  
 * Incorporate best collaborative filtering model for cats and dogs into MLE Stack  
 * Finish setting up deployment stack  
