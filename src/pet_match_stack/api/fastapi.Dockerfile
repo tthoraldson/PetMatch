@@ -39,6 +39,17 @@ COPY ./app /src/app
 
 # create models dir
 RUN mkdir -p /src/app/models/
+
+# move models into place
+COPY ./models /src/app/models/
+
+# move shared vars into place
+COPY ./config.py /src/
  
-# run on port 80
-CMD ["uvicorn", "app.petmatch_backend:app", "--host", "0.0.0.0", "--port", "8086", "--reload"]
+# run on port 80, set reload dir explicitly
+CMD ["uvicorn", "app.petmatch_backend:app", "--host", "0.0.0.0", "--port", "8086","--reload","--reload-dir","/src/app"]
+
+# keep alive when debugging 
+ENTRYPOINT ["tail", "-f", "/dev/null"]
+
+# uvicorn app.petmatch_backend:app --host 0.0.0.0 --port 8086 --reload --reload-dir /src/app

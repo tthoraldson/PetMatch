@@ -14,6 +14,7 @@ from typing import List, Dict
 from enum import Enum
 import math
 import joblib
+from config import shared_vars
 
 # configure boto3
 my_config = Config(
@@ -26,10 +27,7 @@ my_config = Config(
 )
 
 origins = [
-    "http://localhost",
-    "http://localhost:8086",
-    "http://localhost:8501",
-    "http://localhost:3000",
+    '*'
 ]
 
 app = FastAPI()
@@ -52,8 +50,8 @@ dynamo = boto3.client(
 
 
 # open model file(s)
-cats_v2_bin_path = '/src/app/models/collabfilter_model_cats_v2.pkl'
-dogs_v2_bin_path = '/src/app/models/collabfilter_model_dogs_v2.pkl'
+cats_v2_bin_path = shared_vars['cats_v2_bin_path']
+dogs_v2_bin_path = shared_vars['dogs_v2_bin_path']
 
 
 # load models
