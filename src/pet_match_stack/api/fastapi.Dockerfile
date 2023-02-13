@@ -21,9 +21,6 @@ RUN pip3 install --no-cache --upgrade pip
 # install numpy and surprise
 RUN pip3 install numpy
 RUN pip3 install scikit-surprise 
-
-
-# FROM python:3.9-slim
  
 # set working dir
 WORKDIR /src
