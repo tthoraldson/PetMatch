@@ -21,6 +21,12 @@ Local Docker
   - For example: `BASE_PATH='/Users/theresa/Desktop/source/PetMatch' docker compose up`
   - Alternative: Create a `.env` file at the root of the repository which contains an environment variable `BASE_PATH` and a string value leading the repository's root within your local file system.
 
+
+Run Petmatch Docker
+------------
+- From the root of repository, run `docker-compose up`
+- Troubleshooting - `docker-compose up --build --force-recreate -d` or `BASE_PATH='YOUR BASE PATH' docker compose up`
+
 Prerequisites
 ------------
 - Docker
