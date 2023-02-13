@@ -19,7 +19,14 @@ Local Docker
   - pull down `master` branch
   - run `BASE_PATH='<Path to this repo!>' docker compose up`
   - For example: `BASE_PATH='/Users/theresa/Desktop/source/PetMatch' docker compose up`
+  - Alternative: Create a `.env` file at the root of the repository which contains an environment variable `BASE_PATH` and a string value leading the repository's root within your local file system.
 
+Prerequisites
+------------
+- Docker
+- Docker Compose
+- Python3.8>=
+- Port Access Availability on local ports: 8086, 8001, 8002, 8003, 3000, 8501, 8087
 
 Project Organization
 ------------
@@ -28,8 +35,7 @@ Project Organization
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
     │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been transformed.
-    │   ├── processed      <- The final, canonical data sets for modeling.
+    │   ├── rankings       <- User rankings (likes,dislikes)
     │   └── raw            <- The original, immutable data dump.
     │
     ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
