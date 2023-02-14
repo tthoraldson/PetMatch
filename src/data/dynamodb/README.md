@@ -1,3 +1,11 @@
+# Requirements for local usage
+
+## Ensure Correct Paths
+
+Dynamodb local as configured in `docker-compose.yml` and `dynamo.Dockerfile` runs to save it's database instance as a `-sharedDb` parameter store at the path designated in the `-dbPath` parameter of the `CMD` script in `dynamo.Dockerfile`. For proper use of a persistent Dynamo database locally, you must ensure that this path exists and is accessible on your local machine. This repository has the structure in place for you to do so, but may require some modification of paths or permissions in order the function as intended.
+
+Resource: [Running DynamoDB Locally (Docker)](https://github.com/awsdocs/amazon-dynamodb-developer-guide/blob/master/doc_source/DynamoDBLocal.DownloadingAndRunning.md#-docker-) 
+
 # Storing user preferences
 
 ## User preferences table
@@ -7,21 +15,22 @@ here's an example of a DynamoDB table schema that uses a unique user id as the p
 ### Table Name: "UserPreferences"
 
 - Primary key: "user_id" (string)
-Sort key: "timestamp" (string) 
-- "dog_size" (string)
-- "dog_energy" (string)
-- "dog_breed" (string)
-- "cat_size" (string)
-- "cat_energy" (string)
-- "cat_breed" (string)
-- "full_name" (string)
-- "email" (string)
-- "zip_code" (number)
-- "readiness" (string)
-- "age" (number)
-- "g_expression" (string)
-- "has_current_pets" (string)
-- "current_pets" (string)
+- Sort key: "timestamp" (string) 
+- user_preferences:
+    - "dog_size" (string)
+    - "dog_energy" (string)
+    - "dog_breed" (string)
+    - "cat_size" (string)
+    - "cat_energy" (string)
+    - "cat_breed" (string)
+    - "full_name" (string)
+    - "email" (string)
+    - "zip_code" (number)
+    - "readiness" (string)
+    - "age" (number)
+    - "g_expression" (string)
+    - "has_current_pets" (string)
+    - "current_pets" (string)
 
 You can use the user_id as the primary key to query for a specific user's preferences, and the timestamp to query for all users by the time they were added.
 
