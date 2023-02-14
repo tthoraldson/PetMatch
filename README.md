@@ -1,17 +1,17 @@
 PetMatch
 ==============================
 
-Petmatch seeks to provide users with curated rescue animal recommendations in the hope that it will 
-lead to higher adoptions rates and lower return rates to shelters. This will be accomplished through
-the use of a recommendation model that extends an existing model in order to include no-kill shelters.
-We will also build a serverless full-stack pipeline and a Tinder-like UI that matches adoptable pets
+Petmatch seeks to provide users with curated animal recommendations in the hope that it will 
+lead to higher adoptions rates and lower return rates to shelters. This is accomplished through
+the use of recommendation models that serve recommendations based on both item-based similarities and user-based
+collaborative filtering. We also built a serverless full-stack pipeline and a Tinder-like UI that matches adoptable pets
 with potential adopters.
 
 Team
 ------------
 * Denise Blady  
 * Theresa Thoraldson  
-* Matthew Robinson  
+* Matthew Robinson   
 
 Local Docker
 ------------
@@ -87,20 +87,30 @@ Project Organization
     │
     └── docker-compose.yml   <- Docker Compose configuration that sets up and configures your local stack
 
+-------
+**Limitations**  
+*Model Limitations:*
+* User-bsed Collaborative Filtering models have a 'cold-start' problem, which we have mitigated by initially collecting animal rankings by beta users. That said this model will need to be continually retrained on a semi-regular schedule to continually improve it.
+* Item-based Content-based similarity models are an exhaustive model that currently has a cap of ~46K animals before memory is exhausted. Research is still being underdone to more efficiently train this model to up the limit of animals it can recommend. 
+
+*Data Limitations:*  
+* Data pulls automatically cut off animal descriptions once they reach a certain limit
+* PetFinder DB API can be limiting for data pulls until we can prove we have a deployable app, must work with stashed local versions of the DB based on pulls until we get higher DB access rights 
+* Distance field based on location at time of pull
+
+*ML Pipeline Limitations:*  
+* Must create 2 different versions of the dogs DynamoDB tables to account for the max animal limitations the Item-based content-based similarity models
+* DynamoDB tables requires pulls at scale, which requires some data currently must be loaded in via a .pkl format rather than queried from the Petmatch stack backend
+
 --------
 **Project Pitch Slides:** /reports/PetMatch_presentationSlides_20230123.pdf  
-**Project Software Architecture Diagram:** /reports/figures/PetMatch_SystemDiagram_20230123.png  
-
-**Still Need to Build:**  
-* Incorporate best content-based filtering model for cats and dogs into MLE Stack  
-* Incorporate best collaborative filtering model for cats and dogs into MLE Stack  
-* Finish setting up deployment stack  
-* UI upgrades deployment (user cold-start preferences, etc..)    
+**Project Software Architecture Diagram:** /reports/figures/PetMatchSystemDiagram_v2.png   
 
 **Future Work:**  
 * Continue collecting user rankings  
 * Add timestamp to user rankings for time-sensitive recommendations  
 * Incorporate distance more effectively into models  
+* Incorporate auto-retrain of models in Sagemaker
 --------
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
