@@ -65,7 +65,6 @@ collab_v2_cats_model = joblib.load(cats_v2_bin_path)
 cat_ids = joblib.load('/src/app/models/catIdsAll_nodupsmissingpics.pkl')
 dog_ids = joblib.load('/src/app/models/dogsIdsAll_nodupsmissingpics.pkl')  
 
-
 class AnimalTypeEnum(str, Enum):
     cat = 'cat'
     dog = 'dog'
