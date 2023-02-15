@@ -13,6 +13,8 @@ import datetime
 from typing import List, Dict
 from enum import Enum
 import math
+import joblib
+import pandas
 
 # configure boto3
 my_config = Config(
@@ -48,6 +50,20 @@ dynamo = boto3.client(
         aws_access_key_id='DUMMYIDEXAMPLE',
         aws_secret_access_key='DUMMYEXAMPLEKEY'
     )
+
+
+# open model file(s)
+cats_v2_bin_path = '/src/app/models/collabfilter_model_cats_v2.pkl'
+dogs_v2_bin_path = '/src/app/models/collabfilter_model_dogs_v2.pkl'
+
+
+# load models
+collab_v2_dogs_model = joblib.load(dogs_v2_bin_path)
+collab_v2_cats_model = joblib.load(cats_v2_bin_path)
+
+# load id files
+cat_ids = joblib.load('/src/app/models/catIdsAll_nodupsmissingpics.pkl')
+dog_ids = joblib.load('/src/app/models/dogsIdsAll_nodupsmissingpics.pkl')  
 
 
 class AnimalTypeEnum(str, Enum):
@@ -275,7 +291,7 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
     elif option =='content':
         print('predict_content todo')
 
-    return json.dumps(ten_pets)
+    #return json.dumps(ten_pets)
 
     # build the keys
     keys : List[Dict] = [
@@ -369,7 +385,7 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
         animal_specs[x] = clean_animal_spec
 
     # dump as JSON to the API
-    #return json.dumps(animal_specs)
+    return json.dumps(animal_specs)
 
 @app.post("/get_url")
 async def get_url(animal_id,animal_type='cat',animals_df=None):
@@ -446,14 +462,50 @@ def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum,):
     )
 
     output=rankings_response["Items"]
-    #all_1user_rankings = pet_rankings[pet_rankings['user_name'] == user_name]
-    #rankings_minusKnownbyUser = pd.concat([pet_rankings,all_1user_rankings], axis=0, ignore_index=True).drop_duplicates(subset=["user_name","animal_id"],keep=False, ignore_index=True) # only remove user specific rankings from overall list, not everyone's!
-    #eligible_animals = rankings_minusKnownbyUser[['animal_id']]
-    #eligible_animals['Estimate_Score'] = eligible_animals['animal_id'].apply(lambda x: animal_model.predict(user_name, x).est)
-    #eligible_animals = eligible_animals.sort_values('Estimate_Score', ascending=False)
-    #print(eligible_animals.head(top_x)) # get top X reccs
-    #reccs= eligible_animals.head(top_x)['animal_id'].tolist()
-    return output
+    output=cat_ids['id'].head(10).to_json()
+    animal_ids=cat_ids
+    animal_model=collab_v2_cats_model
+
+    # Get reccs
+    eligible_animals=animal_ids
+    eligible_animals['Estimate_Score'] = eligible_animals['id'].apply(lambda x: animal_model.predict(user_name, x).est)
+    eligible_animals = eligible_animals.sort_values('Estimate_Score', ascending=False)
+    reccs= eligible_animals.head(top_x+10)['id'].tolist()
+
+    # Query rankings dynamo table to check for already ranked pets
+    # build the keys
+    keys : List[Dict] = [
+            { 'user_id': {'S': str(user_name)}, 'pet_id': {'S': str(pet_id)} } for pet_id in reccs
+        ]
+
+    table_name = "Rankings"
+    response=dynamo.batch_get_item(
+        RequestItems={
+            table_name: {
+                'Keys': keys
+            }
+        }   
+    )
+
+    collab_animals_check : List = response['Responses'][table_name]
+    
+    for indx,_record in enumerate(collab_animals_check):
+        
+        collab_animals_check[indx].update(
+            {'record': json.loads(collab_animals_check[indx]['record']['S'])}
+        )
+
+    animals_toremove = [animal['pet_id'] for animal in collab_animals_check]
+    test_remove=[]
+    for x in animals_toremove:
+        the_id= x['S']
+        test_remove.append(int(the_id))
+
+    animals_toremove = test_remove
+    # Now that we have the removable animals, lets remove them from our reccs
+    final_reccs = [i for i in reccs if i not in animals_toremove]
+    
+    return final_reccs
 
 
 
