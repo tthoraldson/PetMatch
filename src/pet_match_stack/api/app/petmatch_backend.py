@@ -42,10 +42,10 @@ app.add_middleware(
 
 dynamo = boto3.client(
         'dynamodb', 
-        endpoint_url='http://dynamo:8001',
-        config=my_config,
-        aws_access_key_id='DUMMYIDEXAMPLE',
-        aws_secret_access_key='DUMMYEXAMPLEKEY'
+        # endpoint_url='http://dynamo:8001',
+        # config=my_config,
+        # aws_access_key_id='DUMMYIDEXAMPLE',
+        # aws_secret_access_key='DUMMYEXAMPLEKEY'
     )
 
 

@@ -12,7 +12,7 @@ tables=(
 )
 
 for table in "${tables[@]}"; do
-    aws dynamodb create-table --cli-input-json file:///schemas/$table --endpoint-url "http://dynamo:8001" || true
+    aws dynamodb create-table --cli-input-json file:///schemas/$table || true
 done
 
 

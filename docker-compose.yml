@@ -1,39 +1,16 @@
 version: "3.9"
 services:
 
-  # dynamo    
-  dynamo:
-    image: "amazon/dynamodb-local:1.20.0"
-    container_name: dynamodb
-    build:
-      context: ./src/pet_match_stack
-      dockerfile: dynamo.Dockerfile
-    # create shell
-    tty: true
-    ports:
-      - "8001:8001"
-    # mount local user data file to dynamo container
-    volumes:
-      - "./src/data/dynamodb:/home/dynamodblocal/data"
-    working_dir: /home/dynamodblocal
-    networks: 
-    - pet_match_network
-
   # setup db
   db-setup:
     build:
       context: ./src/pet_match_stack/db-setup
       dockerfile: db-setup.Dockerfile
-    # don't start before dynamo
-    depends_on:
-      - dynamo
     # create shell
     tty: true
+    env_file: ./.env
     ports: 
       - "8002:8002"
-    # links to dynamo
-    links:
-      - dynamo
     networks: 
     - pet_match_network
     # mount data to db setup container
@@ -61,13 +38,9 @@ services:
     tty: true
     # mount local user data file to fastapi container
     volumes:
-      - "./src/pet_match_stack/api/app:/src/app"
-      - "$BASE_PATH/models:/src/app/models"
+      - "$BASE_PATH/src/pet_match_stack/api/app:/src/app"
     ports: 
       - "8086:8086"
-    # links to dynamo
-    links:
-      - dynamo
     networks:
     - pet_match_network
 
@@ -80,102 +53,12 @@ services:
     tty: true
     # mount local user data file to fastapi models container
     volumes:
-      - "./src/pet_match_stack/api/model-api:/src/app"
+      - "$BASE_PATH/src/pet_match_stack/api/model-api:/src/app"
     ports: 
       - "8087:8087"
-    # links to dynamo
-    links:
-      - dynamo
     networks:
     - pet_match_network
 
-  # streamlit
-  streamlit:
-    build:
-      context: ./src/visualization
-      dockerfile: streamlit.Dockerfile
-    # create shell
-    tty: true
-    ports: 
-      - "8501:8501"
-    # links to dynamo
-    links:
-      - dynamo
-    networks:
-    - pet_match_network
-    # set env vars
-    environment:
-      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE' # Note: these are dummy values
-      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY' # See: https://github.com/awsdocs/amazon-dynamodb-developer-guide/blob/master/doc_source/DynamoDBLocal.UsageNotes.md
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_DYNAMODB_ENDPOINT: http://dynamodb:8001
-      # AWS_DYNAMODB_TABLE: pet_match
-      REGION: 'us-east-1'
-    # mount data to streamlit container
-    volumes:
-      - type: volume
-        # use the named volume as the source
-        source: pet-data
-        # i.e. your local_dir_absolute path will be mounted to target of next section (bind)
-        target: $BASE_PATH/data/raw
-        volume:
-          nocopy: true
-      - type: bind
-        # use the named volume's target as the source
-        source: $BASE_PATH/data/raw
-        target: /app/data
-        # do not allow app interface to write to pet-data volume
-        read_only: true
-
-      # create a new named volume for storing user rankings within repository
-      - type: volume
-      # use the named volume as the source
-        source: user-rankings
-        # i.e. your local_dir_absolute path will be mounted to target of next section (bind)
-        target: $BASE_PATH/data/rankings
-        volume:
-          # allow copying
-          nocopy: false
-      - type: bind
-        # use the named volume's target as the source
-        source: $BASE_PATH/data/rankings
-        target: /app/rankings
-        # allow writing to the volume
-        read_only: false
-
-      # create a new named volume for application visualization code
-      - type: volume
-      # use the named volume as the source
-        source: code
-        # i.e. your local_dir_absolute path will be mounted to target of next section (bind)
-        target: $BASE_PATH/src/visualization
-        volume: 
-          # allow copying
-          nocopy: false
-      - type: bind
-        # use the named volume's target as the source
-        source: ./src/visualization
-        target: /app
-        # allow writing to the volume
-        read_only: false
-
-  frontend:
-    image: node:16-alpine 
-    container_name: frontend
-    env_file: ./src/frontend/.env
-    build:
-      context: ./src/frontend
-      dockerfile: frontend.Dockerfile
-    # create shell
-    tty: true
-    ports:
-      - "3000:3000"
-    # mount local user data file to dynamo container
-    volumes:
-      - "./src/frontend:/app/frontend/"
-    working_dir: /app/frontend
-    networks: 
-    - pet_match_network
 
 volumes:
   pet-data:
