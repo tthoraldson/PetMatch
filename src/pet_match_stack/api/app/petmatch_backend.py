@@ -55,11 +55,14 @@ dynamo = boto3.client(
 # open model file(s)
 cats_v2_bin_path = '/src/app/models/collabfilter_model_cats_v2.pkl'
 dogs_v2_bin_path = '/src/app/models/collabfilter_model_dogs_v2.pkl'
-
+cats_v2_content_bin_path = '/src/app/models/cosine_similarity_model_catsv2.pkl'
+dogs_v2_content_bin_path = '/src/app/models/cosine_similarity_model_dogsv2.pkl'
 
 # load models
 collab_v2_dogs_model = joblib.load(dogs_v2_bin_path)
 collab_v2_cats_model = joblib.load(cats_v2_bin_path)
+content_v2_dogs_model = joblib.load(dogs_v2_content_bin_path)
+content_v2_cats_model = joblib.load(cats_v2_content_bin_path)
 
 # load id files
 cat_ids = joblib.load('/src/app/models/catIdsAll_nodupsmissingpics.pkl')
@@ -258,7 +261,7 @@ def cleanNullTerms(d):
 
 
 @app.get("/get_new_recommendation/{user_id}/{animal_type}")
-async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTypeEnum, option: OptionEnum):
+async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTypeEnum, option: OptionEnum,animal_id: Union[str,int]):
     """
         
     Parameters: 
@@ -278,6 +281,7 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
     #full_photo_attr = 'primary_photo_cropped.full'
     option = option
     user_id = user_id
+    animal_id = animal_id # only used by content-based filtering
     # This mocks a request to predict_collab for 10 pets by method of collaborative filtering
     #ten_pets = [ 58765130, 58957223, 58704541, 58725463, 58910057, 58710916, 58858666, 58688022, 58912182, 58964429]
 
@@ -285,7 +289,7 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
     if option =='collab':
         ten_pets = predict_collab(user_id,10,animal_type)
     elif option =='content':
-        print('predict_content todo')
+        ten_pets = predict_content(animal_id,10,animal_type)
 
     #return json.dumps(ten_pets) #debugging line
 
@@ -303,7 +307,7 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
                 }
             }   
         )
-    elif animal_type == 'dog' and option == 'collab':
+    elif animal_type == 'dog':
         table_name = "Dogs-Adoptable-master"
         response=dynamo.batch_get_item(
             RequestItems={
@@ -312,15 +316,6 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
                 }
             }   
         )
-
-    # elif animal_type == 'dog' and option == 'content':
-    #     response =dynamo.batch_get_item(
-    #         TableName=table_name,
-    #         Key={
-    #         'pet_id':{'S':animal_id},
-    #         'animal_id':{'S':animal_id}
-    #         }
-    #     )
     
     # load the database response as a python dict obj
     collab_animals : List = response['Responses'][table_name]
@@ -331,7 +326,7 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
             {'record': json.loads(collab_animals[indx]['record']['S'])}
         )
 
-    if animal_type == 'cat': # ugly but no time to rebuild dog table
+    if animal_type == 'cat': # need 2 versions because dogs augmented
         animal_specs = [
             {
                 'pet_id': animal['animal_id']['S'],
@@ -407,12 +402,17 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
                     'colors.tertiary':  animal['record']['colors.tertiary'],
                     'attributes.spayed_neutered':  animal['record']['attributes.spayed_neutered'],
                     'attributes.house_trained':  animal['record']['attributes.house_trained'],
-                    'attributes.declawed':  animal['record']['attributes.declawed'],
                     'attributes.special_needs':  animal['record']['attributes.special_needs'],
                     'attributes.shots_current':  animal['record']['attributes.shots_current'],
                     'environment.children':  animal['record']['environment.children'],
                     'environment.dogs':  animal['record']['environment.dogs'],
                     'environment.cats':  animal['record']['environment.cats'],
+                    'group': animal['record']['group'],
+                    'grooming_frequency_category': animal['record']['grooming_frequency_category'],
+                    'shedding_category': animal['record']['shedding_category'],
+                    'energy_level_category': animal['record']['energy_level_category'],
+                    'trainability_category': animal['record']['trainability_category'],
+                    'demeanor_category': animal['record']['demeanor_category'],
                     'contact.email': animal['record']['contact.email']
                 }
             } for animal in collab_animals
@@ -477,7 +477,7 @@ async def get_picture(animal_id,animal_type='cat',animals_df=None):
 
 
 
-def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum,):
+def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum):
     """
     Parameters: 
             user_name    = string of user name
@@ -550,31 +550,8 @@ def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum,):
     return final_reccs
 
 
-
-def get_item_id(animal_id,animal_type='cat',animals_df=None):  
-    """
-    required by predict_content
-    This method is required to translate from content-based model id for that animal and the petfinder data for that animal. 
-    This ensures the correct petfinder data for the animal is retrieved and is a safety measure
-    Parameters: 
-            animal_id  = animal id
-            animals_df = dataframe of all animals of chosen type (dog, cat)
-            animal_type = specify cat or dog  
-    Output: 
-            petfinder id of animal from content-based recommender
-    """
-    ds = animals_df
-    colsGrab = ['pet_id']
-    if(animal_type=='cat'):
-        response =dynamo.get_item(TableName="Cats-Adoptable",
-                                  Key={'pet_id':{'S',animal_id},'pet_id':{'S',animal_id}}
-                                  )
-    #return ds.loc[ds['id'] == animal_id][colsGrab].values[0]
-    return response[colsGrab].values[0]
-
-
-@app.post("/predict_content")
-async def predict_content(animal_id,animals_df,top_x,animal_model):
+#@app.post("/predict_content")
+def predict_content(animal_id,top_x,animal_type: AnimalTypeEnum):
     """
     If you wish to debug the method, turn the print statements back on!
     Parameters: 
@@ -585,16 +562,17 @@ async def predict_content(animal_id,animals_df,top_x,animal_model):
     Output: 
             top X recommendations in list form
     """
+    if animal_type == 'cat':
+        animal_model = content_v2_cats_model
+    elif animal_type =='dog':
+        animal_model = content_v2_dogs_model
 
-    #print("Recommending " + str(top_x) + " animals similar to " + str(get_item_id(animal_id,animals_df)) + "... " 
-    #      + get_picture(animal_id,animals_df) + " - " + get_url(animal_id,animals_df))   
-    #print("-------")    
+    animal_id = int(animal_id) #guarantee an int or it will fail if not int
     reccs = animal_model[animal_id][:top_x]   
     reccstoOutput = []
     for rec in reccs: 
-        #print("Recommended: " + str(get_item_id(rec[1],animals_df)) + " (score:" +      str(rec[0]) + ") " 
-        #      + get_picture(rec[1],animals_df) + " - " + get_url(rec[1],animals_df))
-        reccstoOutput.append(get_item_id(rec[1],animals_df)[0])
+        reccstoOutput.append(int(rec[1]))
+
     return reccstoOutput
 
 
