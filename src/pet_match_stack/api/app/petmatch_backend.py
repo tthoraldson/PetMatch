@@ -14,7 +14,11 @@ from typing import List, Dict
 from enum import Enum
 import math
 import joblib
+<<<<<<< HEAD
 from config import shared_vars
+=======
+import pandas
+>>>>>>> f8b2a0f3f55706f8dcb4211980eea9df26a4b187
 
 # configure boto3
 my_config = Config(
@@ -50,14 +54,20 @@ dynamo = boto3.client(
 
 
 # open model file(s)
-cats_v2_bin_path = shared_vars['cats_v2_bin_path']
-dogs_v2_bin_path = shared_vars['dogs_v2_bin_path']
-
+cats_v2_bin_path = '/src/app/models/collabfilter_model_cats_v2.pkl'
+dogs_v2_bin_path = '/src/app/models/collabfilter_model_dogs_v2.pkl'
+cats_v2_content_bin_path = '/src/app/models/cosine_similarity_model_catsv2.pkl'
+dogs_v2_content_bin_path = '/src/app/models/cosine_similarity_model_dogsv2.pkl'
 
 # load models
 collab_v2_dogs_model = joblib.load(dogs_v2_bin_path)
 collab_v2_cats_model = joblib.load(cats_v2_bin_path)
+content_v2_dogs_model = joblib.load(dogs_v2_content_bin_path)
+content_v2_cats_model = joblib.load(cats_v2_content_bin_path)
 
+# load id files
+cat_ids = joblib.load('/src/app/models/catIdsAll_nodupsmissingpics.pkl')
+dog_ids = joblib.load('/src/app/models/dogsIdsAll_nodupsmissingpics.pkl')  
 
 class AnimalTypeEnum(str, Enum):
     cat = 'cat'
@@ -252,7 +262,7 @@ def cleanNullTerms(d):
 
 
 @app.get("/get_new_recommendation/{user_id}/{animal_type}")
-async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTypeEnum, option: OptionEnum):
+async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTypeEnum, option: OptionEnum,animal_id: Union[str,int]):
     """
         
     Parameters: 
@@ -267,33 +277,30 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
                 - pet attributes (if true)
             JSON
     """
-    
-    # TODO remove hard
-    table_name = "Cats-Adoptable"
-    full_photo_attr = 'primary_photo_cropped.full'
+
+    #table_name = "Cats-Adoptable"
+    #full_photo_attr = 'primary_photo_cropped.full'
     option = option
     user_id = user_id
-    # unmock
+    animal_id = animal_id # only used by content-based filtering
     # This mocks a request to predict_collab for 10 pets by method of collaborative filtering
-    ten_pets = [ 58765130, 58957223, 58704541, 58725463, 58910057, 58710916, 58858666, 58688022, 58912182, 58964429]
+    #ten_pets = [ 58765130, 58957223, 58704541, 58725463, 58910057, 58710916, 58858666, 58688022, 58912182, 58964429]
 
     # Get recommendation 
     if option =='collab':
         ten_pets = predict_collab(user_id,10,animal_type)
-        #print("here")
     elif option =='content':
-        print('predict_content todo')
+        ten_pets = predict_content(animal_id,10,animal_type)
 
-    return json.dumps(ten_pets)
+    #return json.dumps(ten_pets) #debugging line
 
     # build the keys
     keys : List[Dict] = [
             { 'pet_id': {'S': str(pet_id)}, 'animal_id': {'S': str(pet_id)} } for pet_id in ten_pets
         ]
 
-    # TODO, remove this if we know the table name or animal type
     if animal_type=='cat':
-        
+        table_name = "Cats-Adoptable"
         response=dynamo.batch_get_item(
             RequestItems={
                 table_name: {
@@ -301,24 +308,15 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
                 }
             }   
         )
-
-    # elif animal_type == 'dog' and option == 'collab':
-    #     response =dynamo.batch_get_item(
-    #         TableName=table_name,
-    #         Key={
-    #         'pet_id':{'S':animal_id},
-    #         'animal_id':{'S':animal_id}
-    #         }
-    #     )
-
-    # elif animal_type == 'dog' and option == 'content':
-    #     response =dynamo.batch_get_item(
-    #         TableName=table_name,
-    #         Key={
-    #         'pet_id':{'S':animal_id},
-    #         'animal_id':{'S':animal_id}
-    #         }
-    #     )
+    elif animal_type == 'dog':
+        table_name = "Dogs-Adoptable-master"
+        response=dynamo.batch_get_item(
+            RequestItems={
+                table_name: {
+                    'Keys': keys
+                }
+            }   
+        )
     
     # load the database response as a python dict obj
     collab_animals : List = response['Responses'][table_name]
@@ -329,48 +327,98 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
             {'record': json.loads(collab_animals[indx]['record']['S'])}
         )
 
-    animal_specs = [
-        {
-            'pet_id': animal['animal_id']['S'],
-            'pet_description': animal['record']['description'],
-            'full_photo': animal['record']['primary_photo_cropped.full'],
-            'attrs': {
-                'organization_id': animal['record']['organization_id'],
-                'url': animal['record']['url'],
-                'type': animal['record']['type'],
-                'species': animal['record']['species'],
-                'age': animal['record']['age'],
-                'gender': animal['record']['gender'],
-                'size': animal['record']['size'],
-                'coat': animal['record']['coat'],
-                'tags': animal['record']['tags'],
-                'name': animal['record']['name'],
-                'status': animal['record']['status'],
-                'status_changed_at': animal['record']['status_changed_at'],
-                'published_at': animal['record']['published_at'],
-                'status': animal['record']['status'],
-                'status_changed_at': animal['record']['status_changed_at'],
-                'published_at': animal['record']['published_at'],
-                'distance': animal['record']['distance'],
-                'breeds.primary':  animal['record']['breeds.primary'],
-                'breeds.secondary':  animal['record']['breeds.secondary'],
-                'breeds.mixed':  animal['record']['breeds.mixed'],
-                'breeds.unknown':  animal['record']['breeds.unknown'],
-                'colors.primary':  animal['record']['colors.primary'],
-                'colors.secondary':  animal['record']['colors.secondary'],
-                'colors.tertiary':  animal['record']['colors.tertiary'],
-                'attributes.spayed_neutered':  animal['record']['attributes.spayed_neutered'],
-                'attributes.house_trained':  animal['record']['attributes.house_trained'],
-                'attributes.declawed':  animal['record']['attributes.declawed'],
-                'attributes.special_needs':  animal['record']['attributes.special_needs'],
-                'attributes.shots_current':  animal['record']['attributes.shots_current'],
-                'environment.children':  animal['record']['environment.children'],
-                'environment.dogs':  animal['record']['environment.dogs'],
-                'environment.cats':  animal['record']['environment.cats'],
-                'contact.email': animal['record']['contact.email']
-            }
-        } for animal in collab_animals
-    ]
+    if animal_type == 'cat': # need 2 versions because dogs augmented
+        animal_specs = [
+            {
+                'pet_id': animal['animal_id']['S'],
+                'pet_description': animal['record']['description'],
+                'full_photo': animal['record']['primary_photo_cropped.full'],
+                'attrs': {
+                    'organization_id': animal['record']['organization_id'],
+                    'url': animal['record']['url'],
+                    'type': animal['record']['type'],
+                    'species': animal['record']['species'],
+                    'age': animal['record']['age'],
+                    'gender': animal['record']['gender'],
+                    'size': animal['record']['size'],
+                    'coat': animal['record']['coat'],
+                    'tags': animal['record']['tags'],
+                    'name': animal['record']['name'],
+                    'status': animal['record']['status'],
+                    'status_changed_at': animal['record']['status_changed_at'],
+                    'published_at': animal['record']['published_at'],
+                    'status': animal['record']['status'],
+                    'status_changed_at': animal['record']['status_changed_at'],
+                    'published_at': animal['record']['published_at'],
+                    'distance': animal['record']['distance'],
+                    'breeds.primary':  animal['record']['breeds.primary'],
+                    'breeds.secondary':  animal['record']['breeds.secondary'],
+                    'breeds.mixed':  animal['record']['breeds.mixed'],
+                    'breeds.unknown':  animal['record']['breeds.unknown'],
+                    'colors.primary':  animal['record']['colors.primary'],
+                    'colors.secondary':  animal['record']['colors.secondary'],
+                    'colors.tertiary':  animal['record']['colors.tertiary'],
+                    'attributes.spayed_neutered':  animal['record']['attributes.spayed_neutered'],
+                    'attributes.house_trained':  animal['record']['attributes.house_trained'],
+                    'attributes.declawed':  animal['record']['attributes.declawed'],
+                    'attributes.special_needs':  animal['record']['attributes.special_needs'],
+                    'attributes.shots_current':  animal['record']['attributes.shots_current'],
+                    'environment.children':  animal['record']['environment.children'],
+                    'environment.dogs':  animal['record']['environment.dogs'],
+                    'environment.cats':  animal['record']['environment.cats'],
+                    'contact.email': animal['record']['contact.email']
+                }
+            } for animal in collab_animals
+        ]
+    elif animal_type == 'dog': 
+        animal_specs = [
+            {
+                'pet_id': animal['animal_id']['S'],
+                'pet_description': animal['record']['description_x'],
+                'full_photo': animal['record']['primary_photo_cropped.full'],
+                'attrs': {
+                    'organization_id': animal['record']['organization_id'],
+                    'url': animal['record']['url'],
+                    'type': animal['record']['type'],
+                    'species': animal['record']['species'],
+                    'age': animal['record']['age'],
+                    'gender': animal['record']['gender'],
+                    'size': animal['record']['size'],
+                    'coat': animal['record']['coat'],
+                    'tags': animal['record']['tags'],
+                    'name': animal['record']['name'],
+                    'status': animal['record']['status'],
+                    'status_changed_at': animal['record']['status_changed_at'],
+                    'published_at': animal['record']['published_at'],
+                    'status': animal['record']['status'],
+                    'status_changed_at': animal['record']['status_changed_at'],
+                    'published_at': animal['record']['published_at'],
+                    'distance': animal['record']['distance'],
+                    'breeds.primary':  animal['record']['breeds.primary'],
+                    'breeds.secondary':  animal['record']['breeds.secondary'],
+                    'breeds.mixed':  animal['record']['breeds.mixed'],
+                    'breeds.unknown':  animal['record']['breeds.unknown'],
+                    'colors.primary':  animal['record']['colors.primary'],
+                    'colors.secondary':  animal['record']['colors.secondary'],
+                    'colors.tertiary':  animal['record']['colors.tertiary'],
+                    'attributes.spayed_neutered':  animal['record']['attributes.spayed_neutered'],
+                    'attributes.house_trained':  animal['record']['attributes.house_trained'],
+                    'attributes.special_needs':  animal['record']['attributes.special_needs'],
+                    'attributes.shots_current':  animal['record']['attributes.shots_current'],
+                    'environment.children':  animal['record']['environment.children'],
+                    'environment.dogs':  animal['record']['environment.dogs'],
+                    'environment.cats':  animal['record']['environment.cats'],
+                    'group': animal['record']['group'],
+                    'grooming_frequency_category': animal['record']['grooming_frequency_category'],
+                    'shedding_category': animal['record']['shedding_category'],
+                    'energy_level_category': animal['record']['energy_level_category'],
+                    'trainability_category': animal['record']['trainability_category'],
+                    'demeanor_category': animal['record']['demeanor_category'],
+                    'contact.email': animal['record']['contact.email']
+                }
+            } for animal in collab_animals
+        ]
+
     #clean null terms from dictionary
     for x in range(len(animal_specs)):
         to_clean = animal_specs[x]
@@ -378,7 +426,7 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
         animal_specs[x] = clean_animal_spec
 
     # dump as JSON to the API
-    #return json.dumps(animal_specs)
+    return json.dumps(animal_specs)
 
 @app.post("/get_url")
 async def get_url(animal_id,animal_type='cat',animals_df=None):
@@ -430,7 +478,7 @@ async def get_picture(animal_id,animal_type='cat',animals_df=None):
 
 
 
-def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum,):
+def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum):
     """
     Parameters: 
             user_name    = string of user name
@@ -438,58 +486,73 @@ def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum,):
             animal_type = specify cat or dog
     Output: 
             top X recommendations in list form"""
-    # get pet rankings for user for the animal type
-    table_name = "Rankings"
-    rankings_response=dynamo.query(
-        TableName = table_name,
-        KeyConditionExpression="user_id = :id",
-        FilterExpression="contains(#animal_type,:animal_type)",
-        ExpressionAttributeValues={
-            ":id":{"S":user_name},
-            ":animal_type":{"S":animal_type},
-        },
-        ExpressionAttributeNames={
-            "#animal_type":"record",
-        },
+    # example of query - didn't end up using it
+    #rankings_response=dynamo.query(
+    #    TableName = table_name,
+    #    KeyConditionExpression="user_id = :id",
+    #    FilterExpression="contains(#animal_type,:animal_type)",
+    #    ExpressionAttributeValues={
+    #        ":id":{"S":user_name},
+    #        ":animal_type":{"S":animal_type},
+    #    },
+    #    ExpressionAttributeNames={
+    #        "#animal_type":"record",
+    #    },
         #Select="user_id"        
+    #)
+    if animal_type == 'cat':
+        animal_ids=cat_ids
+        animal_model=collab_v2_cats_model
+    elif animal_type == 'dog':
+        animal_ids=dog_ids
+        animal_model=collab_v2_dogs_model
+
+    # Get reccs
+    eligible_animals=animal_ids
+    eligible_animals['Estimate_Score'] = eligible_animals['id'].apply(lambda x: animal_model.predict(user_name, x).est)
+    eligible_animals = eligible_animals.sort_values('Estimate_Score', ascending=False) #best score first
+    reccs= eligible_animals.head(top_x+10)['id'].tolist()
+
+    # Query rankings dynamo table to check for already ranked pets
+    # build the keys
+    keys : List[Dict] = [
+            { 'user_id': {'S': str(user_name)}, 'pet_id': {'S': str(pet_id)} } for pet_id in reccs
+        ]
+    # query
+    table_name = "Rankings"
+    response=dynamo.batch_get_item(
+        RequestItems={
+            table_name: {
+                'Keys': keys
+            }
+        }   
     )
 
-    output=rankings_response["Items"]
-    #all_1user_rankings = pet_rankings[pet_rankings['user_name'] == user_name]
-    #rankings_minusKnownbyUser = pd.concat([pet_rankings,all_1user_rankings], axis=0, ignore_index=True).drop_duplicates(subset=["user_name","animal_id"],keep=False, ignore_index=True) # only remove user specific rankings from overall list, not everyone's!
-    #eligible_animals = rankings_minusKnownbyUser[['animal_id']]
-    #eligible_animals['Estimate_Score'] = eligible_animals['animal_id'].apply(lambda x: animal_model.predict(user_name, x).est)
-    #eligible_animals = eligible_animals.sort_values('Estimate_Score', ascending=False)
-    #print(eligible_animals.head(top_x)) # get top X reccs
-    #reccs= eligible_animals.head(top_x)['animal_id'].tolist()
-    return output
+    collab_animals_check : List = response['Responses'][table_name] #put response in list
+ 
+    for indx,_record in enumerate(collab_animals_check):
+        
+        collab_animals_check[indx].update(
+            {'record': json.loads(collab_animals_check[indx]['record']['S'])}
+        )
+
+    animals_toremove = [animal['pet_id'] for animal in collab_animals_check]
+    test_remove=[]
+    for x in animals_toremove: #remove strings and make ids an int for comparision
+        the_id= x['S']
+        test_remove.append(int(the_id))
+
+    animals_toremove = test_remove # animals to remove
+    # Now that we have the removable animals, lets remove them from our reccs
+    final_reccs = [i for i in reccs if i not in animals_toremove]
+    if len(final_reccs) > top_x: # if more than top_X, cap it
+        final_reccs =final_reccs[0:top_x]
+    
+    return final_reccs
 
 
-
-def get_item_id(animal_id,animal_type='cat',animals_df=None):  
-    """
-    required by predict_content
-    This method is required to translate from content-based model id for that animal and the petfinder data for that animal. 
-    This ensures the correct petfinder data for the animal is retrieved and is a safety measure
-    Parameters: 
-            animal_id  = animal id
-            animals_df = dataframe of all animals of chosen type (dog, cat)
-            animal_type = specify cat or dog  
-    Output: 
-            petfinder id of animal from content-based recommender
-    """
-    ds = animals_df
-    colsGrab = ['pet_id']
-    if(animal_type=='cat'):
-        response =dynamo.get_item(TableName="Cats-Adoptable",
-                                  Key={'pet_id':{'S',animal_id},'pet_id':{'S',animal_id}}
-                                  )
-    #return ds.loc[ds['id'] == animal_id][colsGrab].values[0]
-    return response[colsGrab].values[0]
-
-
-@app.post("/predict_content")
-async def predict_content(animal_id,animals_df,top_x,animal_model):
+#@app.post("/predict_content")
+def predict_content(animal_id,top_x,animal_type: AnimalTypeEnum):
     """
     If you wish to debug the method, turn the print statements back on!
     Parameters: 
@@ -500,16 +563,17 @@ async def predict_content(animal_id,animals_df,top_x,animal_model):
     Output: 
             top X recommendations in list form
     """
+    if animal_type == 'cat':
+        animal_model = content_v2_cats_model
+    elif animal_type =='dog':
+        animal_model = content_v2_dogs_model
 
-    #print("Recommending " + str(top_x) + " animals similar to " + str(get_item_id(animal_id,animals_df)) + "... " 
-    #      + get_picture(animal_id,animals_df) + " - " + get_url(animal_id,animals_df))   
-    #print("-------")    
+    animal_id = int(animal_id) #guarantee an int or it will fail if not int
     reccs = animal_model[animal_id][:top_x]   
     reccstoOutput = []
     for rec in reccs: 
-        #print("Recommended: " + str(get_item_id(rec[1],animals_df)) + " (score:" +      str(rec[0]) + ") " 
-        #      + get_picture(rec[1],animals_df) + " - " + get_url(rec[1],animals_df))
-        reccstoOutput.append(get_item_id(rec[1],animals_df)[0])
+        reccstoOutput.append(int(rec[1]))
+
     return reccstoOutput
 
 
