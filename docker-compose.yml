@@ -62,6 +62,7 @@ services:
     # mount local user data file to fastapi container
     volumes:
       - "./src/pet_match_stack/api/app:/src/app"
+      - "$BASE_PATH/models:/src/app/models"
     ports: 
       - "8086:8086"
     # links to dynamo

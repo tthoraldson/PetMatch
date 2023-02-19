@@ -3,3 +3,6 @@ pydantic==1.10.4
 uvicorn==0.20.0
 requests==2.28.2
 boto3==1.26.55
+# scikit-surprise==1.1.1
+joblib==1.2.0
+pandas==1.4.0
