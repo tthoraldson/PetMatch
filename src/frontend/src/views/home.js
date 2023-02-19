@@ -1,5 +1,4 @@
 import { withAuthenticationRequired } from '@auth0/auth0-react';
-import Box from '@mui/material/Box';
 import Loading from 'components/loading';
 import React from 'react';
 import PetImage from 'utils/petImage';
