@@ -217,6 +217,29 @@ def petmatch_put_preferences(prefs: Preference):
     return json.dumps(response)
 
 
+@app.get("/petmatch/get_preferences/")
+def petmatch_get_preferences(user_id: str):
+
+    users_table = 'UserPreferences'
+
+    # insert the data into the table
+    response = dynamo.get_item(
+            TableName=users_table, 
+            Key={
+                'user_id': {'S': user_id}
+            }
+        )
+    
+    user_pref = response['Item']
+
+    # check the status code of the response
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        print("User data gathered successfully!")
+    else:
+        print("Failed to gather user data. Error: ", response)
+
+    return json.dumps(user_pref)
+
 class UserFeedback(BaseModel):
     user_id: str
     score: float
