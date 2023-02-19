@@ -133,15 +133,20 @@ async def petmatch_put_ranking(ranking:Ranking):
     # get current timestamp as  a string
     now = str(datetime.datetime.now())
 
+    user_id = data['user_id']
+    pet_id = data['pet_id']
+    animal_type = data['animal_type']
+    response = data['response']
+
     # insert the data into the table
     response = dynamo.put_item(
             TableName=rankings_table, 
             Item={
-                'user_id': {'S': data['user_id']},
-                'pet_id': {'S': data['pet_id']},
-                'animal_type': {'S': data['animal_type']},
+                'user_id': {'S': user_id},
+                'pet_id': {'S': pet_id},
+                'animal_type': {'S': animal_type},
                 'timestamp': {'S': now },
-                'response' : {'BOOL': data['response']}
+                'response' : {'BOOL': response}
             }
         )
 
@@ -229,6 +234,7 @@ def petmatch_put_feedback(feedback: UserFeedback):
 
     # get current timestamp as  a string
     now = str(datetime.datetime.now())
+    
 
     # insert the data into the table
     response = dynamo.put_item(
@@ -236,7 +242,7 @@ def petmatch_put_feedback(feedback: UserFeedback):
             Item={
                 'user_id': {'S': data['user_id']},
                 'timestamp': {'S': now } ,
-                'score' : {'S': data['score']}
+                'score' : {'S': str(data['score'])}
             }
         )
 
@@ -296,9 +302,9 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
 
     # build the keys
     keys : List[Dict] = [
-            { 'pet_id': {'S': str(pet_id)}, 'animal_id': {'S': str(pet_id)} } for pet_id in ten_pets
+            { 'pet_id': {'S': str(pet_id)} } for pet_id in ten_pets
         ]
-
+    print(keys)
     if animal_type=='cat':
         table_name = "Cats-Adoptable"
         response=dynamo.batch_get_item(
