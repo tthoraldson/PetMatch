@@ -14,11 +14,7 @@ from typing import List, Dict
 from enum import Enum
 import math
 import joblib
-<<<<<<< HEAD
-from config import shared_vars
-=======
 import pandas
->>>>>>> f8b2a0f3f55706f8dcb4211980eea9df26a4b187
 
 # configure boto3
 my_config = Config(
@@ -62,8 +58,8 @@ dogs_v2_content_bin_path = '/src/app/models/cosine_similarity_model_dogsv2.pkl'
 # load models
 collab_v2_dogs_model = joblib.load(dogs_v2_bin_path)
 collab_v2_cats_model = joblib.load(cats_v2_bin_path)
-content_v2_dogs_model = joblib.load(dogs_v2_content_bin_path)
-content_v2_cats_model = joblib.load(cats_v2_content_bin_path)
+content_v2_dogs_model = joblib.load(dogs_v2_bin_path)
+content_v2_cats_model = joblib.load(cats_v2_bin_path)
 
 # load id files
 cat_ids = joblib.load('/src/app/models/catIdsAll_nodupsmissingpics.pkl')
@@ -121,6 +117,7 @@ class Ranking(BaseModel):
     user_id : str
     pet_id : str
     animal_type: AnimalTypeEnum
+    animal_id : str
     response: bool
 
 @app.post("/petmatch/put_ranking/")
@@ -142,6 +139,7 @@ async def petmatch_put_ranking(ranking:Ranking):
             Item={
                 'user_id': {'S': data['user_id']},
                 'pet_id': {'S': data['pet_id']},
+                'animal_type': {'S': data['animal_type']},
                 'timestamp': {'S': now },
                 'response' : {'BOOL': data['response']}
             }
@@ -153,8 +151,9 @@ async def petmatch_put_ranking(ranking:Ranking):
 
         print("Getting next recommendation")
         new_recommendation = get_new_recommendation(
-            user_id=1,
-            animal_type='cat',
+            user_id=user_id,
+            animal_id=pet_id,
+            animal_type=animal_type,
             option='collab'
         )
 
@@ -168,6 +167,7 @@ class Preference(BaseModel):
     email : str
     zip_code : int
     readiness : str
+    user_id: str
     age : int
     g_expression : Union[str,None] = None
     has_current_pets : Union[str,None] = None
@@ -476,7 +476,12 @@ async def get_picture(animal_id,animal_type='cat',animals_df=None):
     # dump as JSON to the API
     return json.dumps(found_cat_pic[colsGrab])
 
+def recall_preferences():
 
+    # get last MAX PETS liked/disliked by user_id
+    # filter for only the likes
+    
+    return
 
 def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum):
     """
