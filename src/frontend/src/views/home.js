@@ -1,6 +1,7 @@
-import { withAuthenticationRequired } from '@auth0/auth0-react';
+import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 import Loading from 'components/loading';
 import React from 'react';
+import { getCats } from 'services/cat.service';
 import PetImage from 'utils/petImage';
 // import { useLoaderData } from 'react-router-dom';
 import Page from '../components/page';
@@ -16,8 +17,9 @@ export async function loader() {
       // get new pet
 }
 
-export async function getNewPet(){
-  // grab cat/dog preference
+export async function getNewPet(user){
+  getCats(user)
+  
 }
 
 export async function savePreference(){
@@ -25,6 +27,8 @@ export async function savePreference(){
 }
 
 export const Home = () => {
+  const { user } = useAuth0();
+  
   return (
       <Page title='Home | PetMatch'>
           <PetImage image_url='https://images.unsplash.com/photo-1529778873920-4da4926a72c2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1336&q=80'/>
