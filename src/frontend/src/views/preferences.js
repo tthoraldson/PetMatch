@@ -2,40 +2,32 @@ import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 import { Box, Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import Loading from 'components/loading';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Page from '../components/page';
-
-export async function loader() {
-    // TODO: Add api call here~
-    return 'Hello World';
-  }
+import { getUserData, saveUserData } from '../services/user.service';
   
 export const Preferences = () => {
+    const navigate = useNavigate();
     const { user } = useAuth0();
     const [catOrDog, updateCatOrDog] = React.useState(false); // true = cat, false = dog
-    const [userPreferences, setUserPreferences] = React.useState({
-        full_name: null,
-        email: user.email,
-        zip: null,
-        readiness: "not",
-        age: null,
-        g_expression: 'f',
-        has_current_pets: 'n',
-        current_pets: '',
-        dog_size: '',
-        dog_energy: '',
-        cat_size: '',
-        cat_energy: '',
-        user_prefs: []
-    });
+    const data = getUserData(user);
+    const [userPreferences, setUserPreferences] = React.useState(data);
 
     const goHome = (e) => {
         console.warn(userPreferences);
+        navigate('/home');
+    }
+
+    const savePreferences = (e) => {
+        console.warn(userPreferences);
+        console.warn(saveUserData(userPreferences));
+        navigate('/home');
     }
 
     function handleZipCodeChange(e){
         setUserPreferences({
             ...userPreferences,
-            zip: e.target.value
+            zip_code: e.target.value
         })
     }
 
@@ -280,7 +272,7 @@ export const Preferences = () => {
                     </div>
                 }
                 </FormControl>
-                <Button variant="contained" sx={{ m:1 }} onClick={goHome}>Save</Button>
+                <Button variant="contained" sx={{ m:1 }} onClick={savePreferences}>Save</Button>
                 <Button variant="outlined" onClick={goHome}>Cancel</Button>
             </Box>
         </Page>

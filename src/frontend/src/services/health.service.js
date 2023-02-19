@@ -1,6 +1,7 @@
 import { BASE_API } from './base.service';
 
 const HealthService = () => { 
+    console.warn(BASE_API)
         return fetch(BASE_API)
             .then((response) => {
                 if (response.ok) {
