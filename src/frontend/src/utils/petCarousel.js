@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Avatar } from '@mui/material';
 import { LineAxisOutlined } from '@mui/icons-material';
+import axios from 'axios';
 
 const bull = (
   <Box
@@ -17,20 +18,49 @@ const bull = (
   </Box>
 );
 
-function handleNextClick(){
-    // save the preference that just happened
+// function handleNextClick(){
+//     // save the preference that just happened
     
 
-    // const [currentItemIndex, setCurrentItemIndex] = useState(0);
-    // const currentItem = items[currentItemIndex];
-    // iterate the state of the card to the next item
+//     const [currentItemIndex, setCurrentItemIndex] = useState(0);
+//     const currentItem = items[currentItemIndex];
+//     // iterate the state of the card to the next item
 
-    // return the next current pet from state
-}
+//     // return the next current pet from state
+// }
 
 
 
 export default function petCarousel(imageUrl,petDescription,petName) {
+
+    const saveLikeRanking = () => {
+        console.log("User liked this content");
+        // code to save like preference here
+        axios.post('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/petmatch/put_ranking', {
+            
+        // MOCKED TODO: replace with actual user_id and info
+            "user_id": "000",
+            "pet_id": "string",
+            "animal_type": "cat",
+            "preference": true
+            
+        })
+    };
+    
+    const saveDislikeRanking = () => {
+        console.log("User disliked this content");
+        // code to save dislike preference here
+        axios.post('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/petmatch/put_ranking', {
+            
+        // MOCKED TODO: replace with actual user_id and info
+            "user_id": "000",
+            "pet_id": "test",
+            "animal_type": "cat",
+            "preference": false
+            
+        })
+    };
+
   return (
     <Card sx={{ minWidth: 275 }}>
       <Avatar alt='' src={imageUrl} sx={{w:500}} /> 
@@ -43,41 +73,9 @@ export default function petCarousel(imageUrl,petDescription,petName) {
         </Typography>
         </CardContent>
       <CardActions>
-        <Button variant="contained" style={{ backgroundColor: 'green', color: 'white' }} >Like</Button>
-        <Button variant="outlined" style={{ backgroundColor: 'red', color: 'white' }} >Not For Me</Button>
+        <Button variant="contained" onClick={saveLikeRanking} style={{ backgroundColor: 'green', color: 'white' }} >Like</Button>
+        <Button variant="outlined" onClick={saveDislikeRanking} style={{ backgroundColor: 'red', color: 'white' }} >Not For Me</Button>
       </CardActions>
     </Card>
   );
 }
-
-
-
-
-// import Box from '@mui/material/Box';
-// import React from 'react';
-// import Card from '@mui/material/Card';
-// import CardActionArea from '@mui/material/CardActionArea';
-// import CardActions from '@mui/material/CardActions';
-// import CardContent from '@mui/material/CardContent';
-// import CardMedia from '@mui/material/CardMedia';
-// import Button from '@mui/material/Button';
-// import Avatar from '@mui/material/Avatar';
-
-
-// export default function PetImage(image_url, width, height) {
-//     return (
-//         <Box
-//           sx={{
-//             width: width,
-//             height: height,
-//           }}>
-//           <img src='https://images.unsplash.com/photo-1529778873920-4da4926a72c2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60'
-//           style={{
-//             objectFit: 'cover',
-//             width: '100%',
-//           }}
-//           alt='Adoptable Pet'
-//           />
-//         </Box>
-//     );
-//   }
