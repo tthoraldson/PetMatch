@@ -2,8 +2,6 @@ import axios from 'axios';
 import { json } from 'react-router-dom';
 import { BASE_API } from './base.service';
 
-let BASE_API = 'http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/'
-
 export function getUserData(userId) {
     // TODO: Add functionality when get route is ready
     // const response = await axios.get(`${BASE_API}user`, {
