@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Loading from 'components/loading';
 import React from 'react';
 import { getCats } from 'services/cat.service';
+import { getDogs } from 'services/dog.service';
 import PetImage from 'utils/petImage';
 // import { useLoaderData } from 'react-router-dom';
 import Page from '../components/page';
@@ -20,6 +21,7 @@ export async function loader() {
 
 export async function getNewPet(user){
   getCats(user)
+  getDogs(user)
   // saveCatPreferences(null, null, null)
 }
 
