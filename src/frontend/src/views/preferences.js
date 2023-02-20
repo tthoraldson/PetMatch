@@ -10,7 +10,7 @@ export const Preferences = () => {
     const navigate = useNavigate();
     const { user } = useAuth0();
     const [catOrDog, updateCatOrDog] = React.useState(false); // true = cat, false = dog
-    const data = getUserData(user);
+    const data = getUserData(user.email);
     const [userPreferences, setUserPreferences] = React.useState(data);
 
     const goHome = (e) => {

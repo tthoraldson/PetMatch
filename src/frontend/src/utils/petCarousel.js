@@ -21,8 +21,8 @@ function handleNextClick(){
     // save the preference that just happened
     
 
-    const [currentItemIndex, setCurrentItemIndex] = useState(0);
-    const currentItem = items[currentItemIndex];
+    // const [currentItemIndex, setCurrentItemIndex] = useState(0);
+    // const currentItem = items[currentItemIndex];
     // iterate the state of the card to the next item
 
     // return the next current pet from state
