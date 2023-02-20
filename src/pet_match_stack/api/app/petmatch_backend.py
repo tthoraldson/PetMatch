@@ -113,12 +113,12 @@ def describe_dynamo():
     print(response)
     return 'done'
 
+
 class Ranking(BaseModel):
     user_id : str
     pet_id : str
     animal_type: AnimalTypeEnum
-    animal_id : str
-    response: bool
+    preference: bool
 
 @app.post("/petmatch/put_ranking/")
 async def petmatch_put_ranking(ranking:Ranking):
@@ -136,7 +136,7 @@ async def petmatch_put_ranking(ranking:Ranking):
     user_id = data['user_id']
     pet_id = data['pet_id']
     animal_type = data['animal_type']
-    response = data['response']
+    preference = data['preference']
 
     # insert the data into the table
     response = dynamo.put_item(
@@ -146,7 +146,7 @@ async def petmatch_put_ranking(ranking:Ranking):
                 'pet_id': {'S': pet_id},
                 'animal_type': {'S': animal_type},
                 'timestamp': {'S': now },
-                'response' : {'BOOL': response}
+                'preference' : {'BOOL': preference}
             }
         )
 
@@ -457,56 +457,57 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
     # dump as JSON to the API
     return json.dumps(animal_specs)
 
-@app.post("/get_url")
-async def get_url(animal_id,animal_type='cat',animals_df=None):
-    """
-    Parameters: 
-            animal_id  = animal id
-            animals_df = dataframe of all animals of chosen type (dog, cat) 
-            animal_type = specify cat or dog
-    Output: 
-            petfinder url of given animal_id
-    """
+# @app.post("/get_url")
+# async def get_url(animal_id,animal_type='cat',animals_df=None):
+#     """
+#     Parameters: 
+#             animal_id  = animal id
+#             animals_df = dataframe of all animals of chosen type (dog, cat) 
+#             animal_type = specify cat or dog
+#     Output: 
+#             petfinder url of given animal_id
+#     """
     
-    ds = animals_df
-    colsGrab = ['url']
-    if(animal_type=='cat'):
-        response =dynamo.get_item(TableName="Cats-Adoptable",
-                                  Key={'pet_id':{'S',animal_id},'pet_id':{'S',animal_id}}
-                                  )
-    #return ds.loc[ds['pet_id'] == animal_id][colsGrab].values[0]   
-    return response[colsGrab].values[0] 
+#     ds = animals_df
+#     colsGrab = ['url']
+#     if(animal_type=='cat'):
+#         response =dynamo.get_item(TableName="Cats-Adoptable",
+#                                   Key={'pet_id':{'S',animal_id},'pet_id':{'S',animal_id}}
+#                                   )
+#     #return ds.loc[ds['pet_id'] == animal_id][colsGrab].values[0]   
+#     return response[colsGrab].values[0] 
 
 
-@app.post("/get_picture")
-async def get_picture(animal_id,animal_type='cat',animals_df=None):  
-    """
-    Parameters: 
-            animal_id  = animal id
-            animals_df = dataframe of all animals of chosen type (dog, cat)
-            animal_type = specify cat or dog 
-    Output: 
-            petfinder url of given animal_id
-    """
-    ds = animals_df
-    colsGrab = 'primary_photo_cropped.full'
+# @app.post("/get_picture")
+# async def get_picture(animal_id,animal_type='cat',animals_df=None):  
+#     """
+#     Parameters: 
+#             animal_id  = animal id
+#             animals_df = dataframe of all animals of chosen type (dog, cat)
+#             animal_type = specify cat or dog 
+#     Output: 
+#             petfinder url of given animal_id
+#     """
+#     ds = animals_df
+#     colsGrab = 'primary_photo_cropped.full'
 
-    if(animal_type=='cat'):
-        response =dynamo.get_item(TableName="Cats-Adoptable",
-                                  Key={
-                                    'pet_id':{'S':animal_id},
-                                    'animal_id':{'S':animal_id}
-                                    }
-                                  )
-    #return ds.loc[ds['pet_id'] == animal_id][colsGrab].values[0]
-    # load the database response as a python dict obj
-    found_cat_pic = json.loads(response['Item']['record']['S'])
+#     if(animal_type=='cat'):
+#         response =dynamo.get_item(TableName="Cats-Adoptable",
+#                                   Key={
+#                                     'pet_id':{'S':animal_id},
+#                                     'animal_id':{'S':animal_id}
+#                                     }
+#                                   )
+#     #return ds.loc[ds['pet_id'] == animal_id][colsGrab].values[0]
+#     # load the database response as a python dict obj
+#     found_cat_pic = json.loads(response['Item']['record']['S'])
 
-    # dump as JSON to the API
-    return json.dumps(found_cat_pic[colsGrab])
+#     # dump as JSON to the API
+#     return json.dumps(found_cat_pic[colsGrab])
 
 def recall_preferences():
 
+    # TODO Implement
     # get last MAX PETS liked/disliked by user_id
     # filter for only the likes
     
@@ -545,13 +546,17 @@ def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum):
     eligible_animals=animal_ids
     eligible_animals['Estimate_Score'] = eligible_animals['id'].apply(lambda x: animal_model.predict(user_name, x).est)
     eligible_animals = eligible_animals.sort_values('Estimate_Score', ascending=False) #best score first
-    reccs= eligible_animals.head(top_x+10)['id'].tolist()
-
+    reccs = eligible_animals.head(top_x+10)['id'].tolist()
+    
+    # ensure no duplicate primary keys
+    reccs = list(set(reccs))
+    
     # Query rankings dynamo table to check for already ranked pets
     # build the keys
     keys : List[Dict] = [
             { 'user_id': {'S': str(user_name)}, 'pet_id': {'S': str(pet_id)} } for pet_id in reccs
         ]
+
     # query
     table_name = "Rankings"
     response=dynamo.batch_get_item(
@@ -563,7 +568,7 @@ def predict_collab(user_name,top_x,animal_type: AnimalTypeEnum):
     )
 
     collab_animals_check : List = response['Responses'][table_name] #put response in list
- 
+    
     for indx,_record in enumerate(collab_animals_check):
         
         collab_animals_check[indx].update(
