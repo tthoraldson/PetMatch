@@ -66,6 +66,8 @@ export function getUserData(userId) {
 }
 
 export async function saveUserData(data) {
-    const response = await axios.post(`${BASE_API}petmatch/put_preferences/`, data);
-    return response.data;  
+
+    console.log(data,'we are saving this \n')
+    // const response = await axios.post(`${BASE_API}petmatch/put_preferences/`, data);
+    // return response.data;  
 }

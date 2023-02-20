@@ -6,12 +6,17 @@ import { useNavigate } from 'react-router-dom';
 import Page from '../components/page';
 import { getUserData, saveUserData } from '../services/user.service';
   
-export const Preferences = () => {
+export const Preferences = (e) => {
     const navigate = useNavigate();
     const { user } = useAuth0();
     const [catOrDog, updateCatOrDog] = React.useState(false); // true = cat, false = dog
-    const data = getUserData(user.email);
+    
+    
+    // const data = getUserData(user.email);
+    const data = 'test'
+
     const [userPreferences, setUserPreferences] = React.useState(data);
+
 
     const goHome = (e) => {
         console.warn(userPreferences);
@@ -21,12 +26,13 @@ export const Preferences = () => {
     const savePreferences = (e) => {
         console.warn(userPreferences);
         console.warn(saveUserData(userPreferences));
+        console.log('saving preferences...')
         navigate('/home');
     }
 
     function handleZipCodeChange(e){
         setUserPreferences({
-            ...userPreferences,
+            // ...userPreferences,
             zip_code: e.target.value
         })
     }
