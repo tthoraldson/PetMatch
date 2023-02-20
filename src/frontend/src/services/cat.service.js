@@ -2,7 +2,7 @@ import axios from 'axios';
 import { BASE_API } from './base.service';
 
 export function getCats(user){
-    const user_id = user.email; 
+    const user_id = "Denise"; 
     axios.get(`${BASE_API}get_new_recommendation/${user_id}/cat`, {params: {
         option: "collab", // FIXME: check local storage for option 
         animal_id: 0

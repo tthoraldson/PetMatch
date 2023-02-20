@@ -20,7 +20,8 @@ export async function loader() {
 }
 
 export async function getNewPet(user){
-  getCats(user)
+  var cats = getCats(user)
+  console.log(cats);
   getDogs(user)
   // saveCatPreferences(null, null, null)
 }
@@ -33,7 +34,6 @@ export const Home = () => {
   const { user } = useAuth0();
   var data = getNewPet(user);
   console.log(data);
-  console.log(user);
   return (
       <Page title='Home | PetMatch'>
         <Box sx={{width: 400}}>
