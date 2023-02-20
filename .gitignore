@@ -98,3 +98,4 @@ secrets_petfinder.py
 /dvc-local-remote
 
 src/frontend/node_modules
+src/models/trained_models/*
