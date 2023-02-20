@@ -64,28 +64,13 @@ export const Home = () => {
   // console.log(data);
   // make an API request that gets pet recommendation(s) from this user with the query parameters as variables
   http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/get_new_recommendation/${userId}/{animal_type}?option={option}&animal_id={pet_id}
-  
-
-  var userId = '000'
-  var animal_type = 'cat'
-  var option = 'collab'
-  var pet_id = '58698691'
-
-    // load response data from JSON to object
-    // const data = JSON.parse(response.data);
-
-    // console.log(data)
-
-    var imageUrl = 'https://imgs.search.brave.com/dnddfAQSU7-pM-W-IyLq9NWfhn9DIp-ALFzZvvWL500/rs:fit:1200:1200:1/g:ce/aHR0cHM6Ly9tZWRp/YS53aXJlZC5jb20v/cGhvdG9zLzViZGEz/ZjYzYjhlM2NhNTFm/ZWEwMTBiZi9tYXN0/ZXIvd18yNDAwLGNf/bGltaXQvTWFuZGFy/aW5EdWNrLTk3MTU0/NTU0Mi5qcGc';
-    var petDescription = 'This is a cat';
-    var petName = 'Fluffy';
 
     return (
       <Page title='Home | PetMatch'>
         <Box sx={{width: 400}}>
           <PetImage image_url='https://images.unsplash.com/photo-1529778873920-4da4926a72c2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1336&q=80' width='300'/>
 
-          {petCarousel(imageUrl, petDescription, petName)}
+          {petCarousel()}
 
         </Box>
       </Page>

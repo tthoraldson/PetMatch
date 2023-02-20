@@ -1,14 +1,14 @@
 import Box from '@mui/material/Box';
 import React from 'react';
 
-export default function PetImage(image_url, width, height) {
+export default function PetImage(props) {
     return (
         <Box
           sx={{
-            width: width,
-            height: height,
+            width: props['width'],
+            height: props['height'],
           }}>
-          <img src='https://images.unsplash.com/photo-1529778873920-4da4926a72c2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60'
+          <img src={props['image_url']}
           style={{
             objectFit: 'cover',
             width: '100%',
