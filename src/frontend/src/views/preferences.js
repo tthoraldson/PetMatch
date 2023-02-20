@@ -1,5 +1,5 @@
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
-import { Box, Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
+import { Box, Button, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField } from '@mui/material';
 import Loading from 'components/loading';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -115,19 +115,20 @@ export const Preferences = () => {
     
     return (
         <Page title='Preferences | Petmatch'>
+            <Grid
+            container
+            spacing={0}
+            direction="column"
+            alignItems="center"
+            justifyContent="center">
             <h1>Preferences</h1>
-            <Box
-                component="form"
-                sx={{
+            <div
+                style={{
                     display: 'block',
                     alignItems: "center",
-                    justify: "center",
-                    width: "80%",
-                }}
-                noValidate
-                autoComplete="off"
-                >
-                <FormControl sx={{ display: 'block', p:2 }}>
+                    width: 400
+                }}>
+                <FormControl sx={{ display: 'block', p:2, width: '100%' }}>
                 <TextField disabled label="email" defaultValue={user.email} InputLabelProps={{ shrink: true}} sx={{ display: 'block', m:2, width:1}}/>
                 <TextField label="Full Name" InputLabelProps={{ shrink: true}} sx={{ display: 'block', m:2 }} defaultValue={userPreferences.full_name} onChange={handleFullNameChange}/>
                 <TextField label="Zip Code" InputLabelProps={{ shrink: true}} sx={{ display: 'block', m:2 }} defaultValue={userPreferences.zip} onChange={handleZipCodeChange}/>
@@ -274,7 +275,8 @@ export const Preferences = () => {
                 </FormControl>
                 <Button variant="contained" sx={{ m:1 }} onClick={savePreferences}>Save</Button>
                 <Button variant="outlined" onClick={goHome}>Cancel</Button>
-            </Box>
+            </div>
+            </Grid>
         </Page>
     )
 }
