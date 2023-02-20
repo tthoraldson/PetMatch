@@ -6,10 +6,11 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Avatar } from '@mui/material';
-import { LineAxisOutlined } from '@mui/icons-material';
 import axios from 'axios';
-import PetImage, {petImage} from './petImage.js'
-import CardMedia from '@mui/material/CardMedia';
+import PetImage from './petImage.js'
+import { useEffect, useState } from 'react';
+
+
 
 const bull = (
   <Box
@@ -19,19 +20,24 @@ const bull = (
     •
   </Box>
 );
-
-const pets = [1,2,3,4,5]
-
-// function savePreferenceGetNewPet(){
-//     // save the preference that just happened
-    
-
-//     const [currentItemIndex, setCurrentItemIndex] = useState(0);
-//     const currentItem = items[currentItemIndex];
-//     // iterate the state of the card to the next item
-
-//     // return the next current pet from state
-// }
+async function getFirstPet() {
+        
+  // get the first ten pets from the API
+  axios.get('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/get_new_recommendation/000/cat?option=collab&animal_id=58698691').then( response => {
+      
+      // parse the ten returned pets from the response
+      var pet_info = JSON.parse(response.data);
+      // console.log(pet_info,'\n the pets info on load' );
+      
+      var pet = {
+        pet_id: pet_info[0].pet_id,
+        image: pet_info[0].full_photo,
+        description: pet_info[0].description,
+        name: pet_info[0].name
+      }
+      return pet
+  })
+}
 
 export default function petCarousel(props) {
     
@@ -40,25 +46,10 @@ export default function petCarousel(props) {
     var currentPetName
     var currentPetId
 
-    const getFirstPet = () => {
-        
-        // get the first ten pets from the API
-        axios.get('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/get_new_recommendation/000/cat?option=collab&animal_id=58698691').then( response => {
-            
-            // parse the ten returned pets from the response
-            var pet_info = JSON.parse(response.data);
-            console.log(pet_info,'\n the pets info on load' );
-            
-            currentPetId = pet_info[0].pet_id
-            currentImage = `${pet_info[0].full_photo}.jpg`
-            // console.log(currentImage,'\n the current image on load')
-            currentDescription = pet_info[0].description
-            currentPetName = pet_info[0].name
-
-        })
-    }
-
-    getFirstPet()
+    const [petInfo, setPetInfo] = useState({name: '', image: '', description: ''});
+    useEffect(() => {
+      getFirstPet().then( pet => { setPetInfo(pet.data) })
+    });
 
     const saveLikeRanking = () => {
         // console.log("User liked this content");
@@ -78,7 +69,7 @@ export default function petCarousel(props) {
             console.log(pet_info,'\n the pets info after like' );
             
             currentPetId = pet_info[0].pet_id
-            currentImage = `${pet_info[0].full_photo}.jpg`
+            currentImage = pet_info[0].full_photo
             currentDescription = pet_info[0].description
             currentPetName = pet_info[0].name
         })
@@ -110,7 +101,7 @@ export default function petCarousel(props) {
   return (
     <Card sx={{ minWidth: 275 }}>
       {/* <Avatar alt='' src={currentImage} sx={{w:500}} />  */}
-      < PetImage image_url={currentImage} width={500} height={500} />
+      < PetImage image_url={currentImage} />
       {/* <CardMedia
         component="img"
         height="194"
@@ -119,7 +110,7 @@ export default function petCarousel(props) {
       /> */}
       <CardContent>
         <Typography variant="h1" component="div">
-            {currentPetName}
+            {petInfo.name}
         </Typography>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             {currentDescription}

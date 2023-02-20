@@ -4,7 +4,7 @@ import Loading from 'components/loading';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Page from '../components/page';
-import { getUserData, saveUserData } from '../services/user.service';
+import { saveUserData } from '../services/user.service';
   
 export const Preferences = (e) => {
     const navigate = useNavigate();
