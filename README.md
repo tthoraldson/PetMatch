@@ -91,7 +91,7 @@ Project Organization
 **Limitations**  
 *Model Limitations:*
 * User-bsed Collaborative Filtering models have a 'cold-start' problem, which we have mitigated by initially collecting animal rankings by beta users. That said this model will need to be continually retrained on a semi-regular schedule to continually improve it.
-* Item-based Content-based similarity models are an exhaustive model that currently has a cap of ~46K animals before memory is exhausted. Research is still being underdone to more efficiently train this model to up the limit of animals it can recommend. 
+* Item-based Content-based similarity models are an exhaustive model that currently has a cap of ~56K animals before memory is exhausted. Research is still being underdone to more efficiently train this model to up the limit of animals it can recommend. These models can also fill the gap until collaborative filtering models are ready.
 
 *Data Limitations:*  
 * Data pulls automatically cut off animal descriptions once they reach a certain limit
@@ -99,7 +99,6 @@ Project Organization
 * Distance field based on location at time of pull
 
 *ML Pipeline Limitations:*  
-* Must create 2 different versions of the dogs DynamoDB tables to account for the max animal limitations the Item-based content-based similarity models
 * DynamoDB tables requires pulls at scale, which requires some data currently must be loaded in via a .pkl format rather than queried from the Petmatch stack backend
 
 --------
