@@ -5,13 +5,14 @@ import Loading from 'components/loading';
 import React from 'react';
 import { getCats } from 'services/cat.service';
 import { getDogs } from 'services/dog.service';
+import { useEffect, useState } from 'react';
 import PetImage from 'utils/petImage';
 // import { useLoaderData } from 'react-router-dom';
 import Page from '../components/page';
 import axios from 'axios';
 import { json } from 'react-router-dom';
 import { BASE_API } from '../services/base.service';
-import petCarousel from '../utils/petCarousel.js';
+import PetCarousel from '../utils/petCarousel.js';
 
 
 export async function loader() {
@@ -25,10 +26,28 @@ export async function loader() {
       // get new pet
 }
 
-export async function getNewPet(user){
-  var cats = getCats(user)
-  console.log(cats);
-  getDogs(user)
+async function getFirstPet() {
+        
+  // get the first ten pets from the API
+  const response = await axios.get('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/get_new_recommendation/000/cat?option=collab&animal_id=58698691')
+  if (!response || !response.data) {
+    console.error('Error fetching data: ', response)
+    throw new Error('Error fetching data')
+  }
+  // parse the ten returned pets from the response
+  var pet_info = JSON.parse(response.data);
+  // console.log(pet_info,'\n the pets info on load' );
+  
+  var pet = {
+    pet_id: pet_info[0].pet_id,
+    full_photo: pet_info[0].full_photo,
+    description: pet_info[0].description,
+    name: pet_info[0].name
+  }
+  return pet  
+}
+
+async function getNewPet(user){
 
   var userId = '000'
   var animal_type = 'cat'
@@ -57,24 +76,42 @@ export async function savePreference(){
   
 }
 
-export const Home = () => {
+export const Home = function () {
 
+  const [pet, setPet] = useState(null);
   const { user } = useAuth0();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const petFromDB = await getFirstPet();
+      console.log("petFromDB", petFromDB)
+
+      if (petFromDB && petFromDB.full_photo) {
+        setPet(petFromDB)
+      }
+    }
+
+    fetchData()
+  }, [])
+
   // var data = getNewPet(user);
   // console.log(data);
   // make an API request that gets pet recommendation(s) from this user with the query parameters as variables
   http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/get_new_recommendation/${userId}/{animal_type}?option={option}&animal_id={pet_id}
 
-    return (
-      <Page title='Home | PetMatch'>
-        <Box sx={{width: 400}}>
-          <PetImage image_url='https://images.unsplash.com/photo-1529778873920-4da4926a72c2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1336&q=80' width='300'/>
+  return (
+    <Page title='Home | PetMatch'>
+      <Box sx={{width: 400}}>
+    {
+      pet && pet.full_photo && (
 
-          {petCarousel()}
+        <PetCarousel firstImage={pet.full_photo} />
+      )
+    } 
 
-        </Box>
-      </Page>
-    );
+      </Box>
+    </Page>
+  );
 }
 
 export default withAuthenticationRequired(Home, {

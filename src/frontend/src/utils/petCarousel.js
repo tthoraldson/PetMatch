@@ -20,36 +20,34 @@ const bull = (
     •
   </Box>
 );
-async function getFirstPet() {
-        
-  // get the first ten pets from the API
-  axios.get('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/get_new_recommendation/000/cat?option=collab&animal_id=58698691').then( response => {
-      
-      // parse the ten returned pets from the response
-      var pet_info = JSON.parse(response.data);
-      // console.log(pet_info,'\n the pets info on load' );
-      
-      var pet = {
-        pet_id: pet_info[0].pet_id,
-        image: pet_info[0].full_photo,
-        description: pet_info[0].description,
-        name: pet_info[0].name
-      }
-      return pet
-  })
-}
 
-export default function petCarousel(props) {
+export default function PetCarousel(props) {
+
+    const [currentImage, setCurrentImage] = useState(props.firstImage)
+    const [currentPetId, setCurrentPetId] = useState('')
+    const [currentDescription, setCurrentDescription] = useState('')
+    const [currentPetName, setCurrentPetName] = useState('')
+    const [counter, setCounter] = useState(0)
     
-    var currentImage
-    var currentDescription
-    var currentPetName
-    var currentPetId
 
-    const [petInfo, setPetInfo] = useState({name: '', image: '', description: ''});
-    useEffect(() => {
-      getFirstPet().then( pet => { setPetInfo(pet.data) })
-    });
+    // const [petInfo, setPetInfo] = useState({name: '', image: '', description: ''});
+    // useEffect(() => {
+    //   getFirstPet().then( pet => { setPetInfo(pet.data) })
+    // });
+
+
+    function setNextPet (response) {
+        var pet_info = JSON.parse(JSON.parse(response.data));
+
+            setCounter(counter + 1)
+            console.log("PET INFO", pet_info[counter]);
+            
+            setCurrentPetId(pet_info[counter].pet_id)
+            setCurrentImage(`${pet_info[counter].full_photo}.jpg`)
+            setCurrentDescription(pet_info[counter].description)
+            setCurrentPetName(pet_info[counter].name)
+
+    }
 
     const saveLikeRanking = () => {
         // console.log("User liked this content");
@@ -58,21 +56,11 @@ export default function petCarousel(props) {
             
         // MOCKED TODO: replace with actual user_id and info
             "user_id": "000",
-            "pet_id": "string",
+            "pet_id": currentPetId,
             "animal_type": "cat",
             "preference": true
             
-        }).then( response => {
-            
-            // parse the ten returned pets from the response
-            var pet_info = JSON.parse(response.data);
-            console.log(pet_info,'\n the pets info after like' );
-            
-            currentPetId = pet_info[0].pet_id
-            currentImage = pet_info[0].full_photo
-            currentDescription = pet_info[0].description
-            currentPetName = pet_info[0].name
-        })
+        }).then( setNextPet )
     };
     
     const saveDislikeRanking = () => {
@@ -82,20 +70,10 @@ export default function petCarousel(props) {
             
         // MOCKED TODO: replace with actual user_id and info
             "user_id": "000",
-            "pet_id": "test",
+            "pet_id": currentPetId,
             "animal_type": "cat",
             "preference": false
-        }).then( response => {
-            
-            // parse the ten returned pets from the response
-            var pet_info = JSON.parse(response.data);
-            // console.log(pet_info,'\n the pets info after dislike' );
-
-            currentPetId = pet_info[0].pet_id
-            currentImage = `${pet_info[0].full_photo}.jpg`
-            currentDescription = pet_info[0].description
-            currentPetName = pet_info[0].name
-        })
+        }).then(setNextPet)
     };
 
   return (
@@ -110,7 +88,7 @@ export default function petCarousel(props) {
       /> */}
       <CardContent>
         <Typography variant="h1" component="div">
-            {petInfo.name}
+            {currentPetName}
         </Typography>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             {currentDescription}
