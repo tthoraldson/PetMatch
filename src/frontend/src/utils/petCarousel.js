@@ -22,60 +22,68 @@ const bull = (
   </Box>
 );
 
-export default function PetCarousel(props) {
+export const PetCarousel = function (props) {
+
+    console.log(props,'these are the props')
+
     const { user } = useAuth0();
     const [currentImage, setCurrentImage] = useState(props.firstImage)
     const [currentPetId, setCurrentPetId] = useState(props.petId)
     const [currentDescription, setCurrentDescription] = useState(props.petDescription)
     const [currentPetName, setCurrentPetName] = useState(props.petName)
-    const [counter, setCounter] = useState(0)
+    const [counter, setCounter] = useState(0)         
 
     function SetNextPet () {
-        // get the first ten pets from the API
-        // axios.get(`http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/get_new_recommendation/000/cat?option=collab&animal_id=${currentPetId}`).then(
-        //   response => {
-        //     console.warn(response.data)
-        //   }
-        // ).catch((error) => {
-        //   console.warn('there was an error getting the next pet', error);
-        // });
+
         setCounter(counter + 1);
+        setCurrentImage(props.petData[counter].full_photo)
+        setCurrentPetId(props.petData[counter].pet_id)
+        setCurrentDescription(props.petData[counter].pet_description)
+        setCurrentPetName(props.petData[counter].name)
+        
         React.useEffect(() => {
-          console.log(counter)
-        }, [counter])
+            console.log('useEffect called')
+            if (counter === props.petData.length) {
+                console.log('counter is equal to length')
+                setCounter(0)
+            }
+        }, [counter, currentImage, currentPetId, currentDescription, currentPetName])
     }
 
     const saveLikeRanking = () => {
-        // console.log("User liked this content");
         // code to save like preference here
-        axios.post('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/petmatch/put_ranking', {
+        console.log('saving like ranking')
+        var Like = axios.post('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/petmatch/put_ranking', {
             
             "user_id": user.email,
             "pet_id": currentPetId,
             "animal_type": "cat",
             "preference": true
             
-        }).then( SetNextPet )
-        .catch((error) => {
-          console.warn('there was an error saving the like ranking', error);
-          SetNextPet();
-        });
+        })
+        if (Like) {
+          console.log('like ranking saved')
+          SetNextPet()
+        } else {
+            console.log('like ranking not saved')
+            }
     };
     
     const saveDislikeRanking = () => {
-        // console.log("User disliked this content");
         // code to save dislike preference here
-        console.log(currentPetId);
-        axios.post('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/petmatch/put_ranking', {
+        console.log('saving dislike ranking')
+        var Dislike = axios.post('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/petmatch/put_ranking', {
             "user_id": user.email,
             "pet_id": currentPetId,
             "animal_type": "cat",
             "preference": false
-        }).then(SetNextPet)
-        .catch((error) => {
-          console.warn('there was an error saving the dislike ranking', error);
-          SetNextPet();
-        });
+        })
+        if (Dislike) {
+          console.log('dislike ranking saved')
+          SetNextPet()
+        } else {
+            console.log('dislike ranking not saved')
+            }
     };
 
   return (

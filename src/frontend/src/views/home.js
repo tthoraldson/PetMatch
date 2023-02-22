@@ -12,7 +12,7 @@ import Page from '../components/page';
 import axios from 'axios';
 import { json } from 'react-router-dom';
 import { BASE_API } from '../services/base.service';
-import PetCarousel from '../utils/petCarousel.js';
+import {PetCarousel} from '../utils/petCarousel.js';
 import { Grid } from '@mui/material';
 
 
@@ -38,8 +38,8 @@ async function getFirstPet() {
   // parse the ten returned pets from the response
   var pet_info = JSON.parse(response.data);
   // console.log(pet_info,'\n the pets info on load' );
-  console.warn(pet_info)
-  console.log(pet_info[0])
+  // console.warn(pet_info)
+  // console.log(pet_info[0])
   var pet = {
     pet_id: pet_info[4].pet_id,
     full_photo: pet_info[4].full_photo,
@@ -47,7 +47,7 @@ async function getFirstPet() {
     name: pet_info[4]['attrs']['name'],
     pet_info: pet_info
   }
-  console.warn(pet)
+  // console.warn(pet)
   return pet  
 }
 
@@ -88,8 +88,6 @@ export const Home = function () {
   useEffect(() => {
     const fetchData = async () => {
       const petFromDB = await getFirstPet();
-      console.log("petFromDB", petFromDB)
-
       if (petFromDB && petFromDB.full_photo) {
         setPet(petFromDB)
       }
