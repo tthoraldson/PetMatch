@@ -13,6 +13,7 @@ import axios from 'axios';
 import { json } from 'react-router-dom';
 import { BASE_API } from '../services/base.service';
 import PetCarousel from '../utils/petCarousel.js';
+import { Grid } from '@mui/material';
 
 
 export async function loader() {
@@ -37,13 +38,16 @@ async function getFirstPet() {
   // parse the ten returned pets from the response
   var pet_info = JSON.parse(response.data);
   // console.log(pet_info,'\n the pets info on load' );
-  
+  console.warn(pet_info)
+  console.log(pet_info[0])
   var pet = {
-    pet_id: pet_info[0].pet_id,
-    full_photo: pet_info[0].full_photo,
-    description: pet_info[0].description,
-    name: pet_info[0].name
+    pet_id: pet_info[4].pet_id,
+    full_photo: pet_info[4].full_photo,
+    description: pet_info[4].pet_description,
+    name: pet_info[4]['attrs']['name'],
+    pet_info: pet_info
   }
+  console.warn(pet)
   return pet  
 }
 
@@ -101,15 +105,15 @@ export const Home = function () {
 
   return (
     <Page title='Home | PetMatch'>
-      <Box sx={{width: 400}}>
+      <Grid container justifyContent="center">
     {
       pet && pet.full_photo && (
 
-        <PetCarousel firstImage={pet.full_photo} />
+        <PetCarousel petData={pet.pet_info} firstImage={pet.full_photo} petName={pet.name} petDescription={pet.description} petId={pet.pet_id} />
       )
     } 
 
-      </Box>
+      </Grid>
     </Page>
   );
 }

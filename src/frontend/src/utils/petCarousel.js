@@ -5,10 +5,11 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Avatar } from '@mui/material';
+import { Avatar, Container, Grid } from '@mui/material';
 import axios from 'axios';
 import PetImage from './petImage.js'
 import { useEffect, useState } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 
 
 
@@ -22,31 +23,26 @@ const bull = (
 );
 
 export default function PetCarousel(props) {
-
+    const { user } = useAuth0();
     const [currentImage, setCurrentImage] = useState(props.firstImage)
-    const [currentPetId, setCurrentPetId] = useState('')
-    const [currentDescription, setCurrentDescription] = useState('')
-    const [currentPetName, setCurrentPetName] = useState('')
+    const [currentPetId, setCurrentPetId] = useState(props.petId)
+    const [currentDescription, setCurrentDescription] = useState(props.petDescription)
+    const [currentPetName, setCurrentPetName] = useState(props.petName)
     const [counter, setCounter] = useState(0)
-    
 
-    // const [petInfo, setPetInfo] = useState({name: '', image: '', description: ''});
-    // useEffect(() => {
-    //   getFirstPet().then( pet => { setPetInfo(pet.data) })
-    // });
-
-
-    function setNextPet (response) {
-        var pet_info = JSON.parse(JSON.parse(response.data));
-
-            setCounter(counter + 1)
-            console.log("PET INFO", pet_info[counter]);
-            
-            setCurrentPetId(pet_info[counter].pet_id)
-            setCurrentImage(`${pet_info[counter].full_photo}.jpg`)
-            setCurrentDescription(pet_info[counter].description)
-            setCurrentPetName(pet_info[counter].name)
-
+    function SetNextPet () {
+        // get the first ten pets from the API
+        // axios.get(`http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/get_new_recommendation/000/cat?option=collab&animal_id=${currentPetId}`).then(
+        //   response => {
+        //     console.warn(response.data)
+        //   }
+        // ).catch((error) => {
+        //   console.warn('there was an error getting the next pet', error);
+        // });
+        setCounter(counter + 1);
+        React.useEffect(() => {
+          console.log(counter)
+        }, [counter])
     }
 
     const saveLikeRanking = () => {
@@ -54,50 +50,55 @@ export default function PetCarousel(props) {
         // code to save like preference here
         axios.post('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/petmatch/put_ranking', {
             
-        // MOCKED TODO: replace with actual user_id and info
-            "user_id": "000",
+            "user_id": user.email,
             "pet_id": currentPetId,
             "animal_type": "cat",
             "preference": true
             
-        }).then( setNextPet )
+        }).then( SetNextPet )
+        .catch((error) => {
+          console.warn('there was an error saving the like ranking', error);
+          SetNextPet();
+        });
     };
     
     const saveDislikeRanking = () => {
         // console.log("User disliked this content");
         // code to save dislike preference here
+        console.log(currentPetId);
         axios.post('http://petmatch-alb-1418813607.us-east-1.elb.amazonaws.com:8086/petmatch/put_ranking', {
-            
-        // MOCKED TODO: replace with actual user_id and info
-            "user_id": "000",
+            "user_id": user.email,
             "pet_id": currentPetId,
             "animal_type": "cat",
             "preference": false
-        }).then(setNextPet)
+        }).then(SetNextPet)
+        .catch((error) => {
+          console.warn('there was an error saving the dislike ranking', error);
+          SetNextPet();
+        });
     };
 
   return (
-    <Card sx={{ minWidth: 275 }}>
-      {/* <Avatar alt='' src={currentImage} sx={{w:500}} />  */}
-      < PetImage image_url={currentImage} />
-      {/* <CardMedia
-        component="img"
-        height="194"
-        image={`${currentImage}.jpg`}
-        alt="Paella dish"
-      /> */}
-      <CardContent>
-        <Typography variant="h1" component="div">
-            {currentPetName}
-        </Typography>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {currentDescription}
-        </Typography>
-        </CardContent>
-      <CardActions>
-        <Button variant="contained" onClick={saveLikeRanking} style={{ backgroundColor: 'green', color: 'white' }} >Like</Button>
-        <Button variant="outlined" onClick={saveDislikeRanking} style={{ backgroundColor: 'red', color: 'white' }} >Not For Me</Button>
-      </CardActions>
-    </Card>
+    <Grid container justifyContent="center">
+      <Card sx={{ minWidth: 400, maxWidth: 600, marginTop: 10, alignItems: 'center' }}>
+      <Grid container justifyContent="center">
+        <Avatar alt={currentPetId} src={currentImage} sx={{ marginTop: 10, width: 300, height: 300, alignContent: 'center' }} /> 
+        <CardContent>
+        <Grid container justifyContent="center">
+          <Typography variant="h1" component="div">
+              {currentPetName}
+          </Typography>
+          </Grid>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+              {currentDescription}
+          </Typography>
+          </CardContent>
+        <CardActions>
+          <Button variant="contained" onClick={saveLikeRanking} style={{ backgroundColor: 'green', color: 'white' }} >Like</Button>
+          <Button variant="outlined" onClick={saveDislikeRanking} style={{ backgroundColor: 'red', color: 'white' }} >Not For Me</Button>
+        </CardActions>
+        </Grid>
+      </Card>
+    </Grid>
   );
 }
