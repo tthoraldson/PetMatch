@@ -154,7 +154,8 @@ async def petmatch_put_ranking(ranking:Ranking):
         new_recommendation = get_new_recommendation(
             user_id=1,
             animal_type='cat',
-            option='collab'
+            option='collab',
+            animal_id='000'
         )
 
     else:
@@ -287,7 +288,7 @@ async def get_new_recommendation(user_id: Union[str,int], animal_type: AnimalTyp
 
     # Get recommendation 
     if option =='collab':
-        ten_pets = predict_collab(user_id,10,animal_type)
+        ten_pets = predict_collab(user_id,50,animal_type)
     elif option =='content':
         ten_pets = predict_content(animal_id,10,animal_type)
 
