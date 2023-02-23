@@ -99,3 +99,7 @@ secrets_petfinder.py
 
 src/frontend/node_modules
 src/models/trained_models/*
+
+src/frontend/node_modules
+src/models/trained_models/*
+models/
