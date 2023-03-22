@@ -46,6 +46,8 @@ export const PetCarousel = function (props) {
             if (counter === props.petData.length) {
                 console.log('counter is equal to length')
                 setCounter(0)
+
+                // TODO get the next ten pets, and set them in state
             }
         }, [counter, currentImage, currentPetId, currentDescription, currentPetName])
     }

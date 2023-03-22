@@ -15,18 +15,6 @@ import { BASE_API } from '../services/base.service';
 import {PetCarousel} from '../utils/petCarousel.js';
 import { Grid } from '@mui/material';
 
-
-export async function loader() {
-  // TODO: Add api call here~
-  return 'Hello World';
-
-
-    // get user preferences
-    // set user preferences
-
-      // get new pet
-}
-
 async function getFirstPet() {
         
   // get the first ten pets from the API
