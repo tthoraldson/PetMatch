@@ -1,6 +1,6 @@
-import axios from 'axios';
-import { json } from 'react-router-dom';
-import { BASE_API } from './base.service';
+// import axios from 'axios';
+// import { json } from 'react-router-dom';
+// import { BASE_API } from './base.service';
 
 export function getUserData(userId) {
     // axios.get(`${BASE_API}petmatch/get_preferences/?user_id=${userId}`).then( response => {
